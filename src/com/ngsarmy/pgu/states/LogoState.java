@@ -16,7 +16,6 @@ public class LogoState extends GameState
 {
 	GameImage image;
 	GameTimer timer;
-	GameText text;
 	
 	boolean visible = false;
 	
@@ -32,10 +31,7 @@ public class LogoState extends GameState
 			System.exit(-1);
 		image.rotate(90);
 		image.setAlpha(100);
-		text = new GameText();
-		if(!text.loadFont("res/PGUFont.png", 16, 16))
-			System.exit(-1);
-		text.setText("abaad");
+		visible = true;
 	}
 
 	public void event(GameEvent ev)
@@ -65,7 +61,6 @@ public class LogoState extends GameState
 		if(visible)
 			for(int i = 0; i < 20000; i++)
 				g.renderImage(image, x + i, y);
-		g.renderText(text, 0, 0);
 	}
 	
 	public void unload()
