@@ -1,0 +1,74 @@
+package com.ngsarmy.pgu.states;
+
+import java.awt.event.KeyEvent;
+
+import com.ngsarmy.pgu.core.Game;
+import com.ngsarmy.pgu.core.GameEvent;
+import com.ngsarmy.pgu.core.GameEventType;
+import com.ngsarmy.pgu.core.GameImage;
+import com.ngsarmy.pgu.core.GameRasterizer;
+import com.ngsarmy.pgu.core.GameState;
+import com.ngsarmy.pgu.core.GameText;
+import com.ngsarmy.pgu.input.GameKeyboard;
+import com.ngsarmy.pgu.utils.GameTimer;
+
+public class LogoState extends GameState
+{
+	GameImage image;
+	GameTimer timer;
+	GameText text;
+	
+	boolean visible = false;
+	
+	int x = 0;
+	int y = 0;
+	
+	public LogoState(Game _game)
+	{
+		super(_game);
+		timer = new GameTimer();
+		image = new GameImage();
+		if(!image.loadFromFile("res/PGULogo.png"))
+			System.exit(-1);
+		image.rotate(90);
+		image.setAlpha(100);
+		text = new GameText();
+		if(!text.loadFont("res/PGUFont.png", 16, 16))
+			System.exit(-1);
+		text.setText("abaad");
+	}
+
+	public void event(GameEvent ev)
+	{
+		if(ev.type == GameEventType.E_MOUSE_CLICK)
+			visible = !visible;
+	}
+	
+	public void load()
+	{
+	}
+	
+	public void update(double delta)
+	{
+		if(GameKeyboard.isKeyDown(KeyEvent.VK_A))
+			x -= (int)(100 * delta);
+		if(GameKeyboard.isKeyDown(KeyEvent.VK_S))
+			y += (int)(100 * delta);
+		if(GameKeyboard.isKeyDown(KeyEvent.VK_D))
+			x += (int)(100 * delta);
+		if(GameKeyboard.isKeyDown(KeyEvent.VK_W))
+			y -= (int)(100 * delta);
+	}
+	
+	public void render(GameRasterizer g)
+	{
+		if(visible)
+			for(int i = 0; i < 20000; i++)
+				g.renderImage(image, x + i, y);
+		g.renderText(text, 0, 0);
+	}
+	
+	public void unload()
+	{
+	}
+}
