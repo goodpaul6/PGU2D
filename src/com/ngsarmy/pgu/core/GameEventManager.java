@@ -22,20 +22,24 @@ public class GameEventManager
 	}
 
 	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY
-	public static void pushButtonReleaseEvent(int button)
+	public static void pushButtonReleaseEvent(int button, int x, int y)
 	{
 		GameEvent ev = new GameEvent();
 		ev.button = button;
 		ev.type = GameEventType.E_MOUSE_BUTTON_RELEASED;
+		ev.x = x;
+		ev.y = y;
 		eventQueue.push(ev);
 	}
 
 	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY
-	public static void pushButtonClickEvent(int button)
+	public static void pushButtonClickEvent(int button, int x, int y)
 	{
 		GameEvent ev = new GameEvent();
 		ev.button = button;
 		ev.type = GameEventType.E_MOUSE_CLICK;
+		ev.x = x;
+		ev.y = y;
 		eventQueue.push(ev);	
 	}
 
