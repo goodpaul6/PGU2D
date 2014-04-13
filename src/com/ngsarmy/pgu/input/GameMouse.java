@@ -44,7 +44,7 @@ public class GameMouse implements MouseListener, MouseMotionListener, MouseWheel
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
 	public void mouseClicked(MouseEvent e)
 	{
-		GameEventManager.pushButtonClickEvent(e.getButton());
+		GameEventManager.pushButtonClickEvent(e.getButton(), e.getX(), e.getY());
 	}
 
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
@@ -76,7 +76,7 @@ public class GameMouse implements MouseListener, MouseMotionListener, MouseWheel
 		if(button == MouseEvent.BUTTON2) right = true;
 		x = e.getX();
 		y = e.getY();
-		GameEventManager.pushButtonPressEvent(button);
+		GameEventManager.pushButtonPressEvent(button, x, y);
 	}
 
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
@@ -88,7 +88,7 @@ public class GameMouse implements MouseListener, MouseMotionListener, MouseWheel
 		if(button == MouseEvent.BUTTON2) right = false;
 		x = e.getX();
 		y = e.getY();
-		GameEventManager.pushButtonReleaseEvent(button);
+		GameEventManager.pushButtonReleaseEvent(button, x, y);
 	}
 
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
