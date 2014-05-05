@@ -193,9 +193,30 @@ public class GameRasterizer
 	}
 	
 	
-	public void getRaster(int[] pix) throws Exception
+	public void getRaster(int[] pix)
 	{
-		for(int i = 0; i < pix.length; i++)
+		for(int i = 0; i < (int)Math.min(pix.length, pixels.length); i++)
 			pix[i] = pixels[i];
+	}
+	
+	public void getRasterRegion(int[] pix, int ox, int oy, int w, int h) throws Exception
+	{
+		if(ox + w < 0) return;
+		if(ox + h < 0) return;
+		if(ox >= width) return;
+		if(oy >= height) return;
+		if(pix.length < w * h) throw new Exception("Attempted to get raster region but length of container was not adequate!");
+		
+		for(int y = oy; y < oy + h; y++)
+		{
+			int iX = y - oy;
+			if(y >= height || y < 0) continue;
+			for(int x = ox; x < ox + w; x++)
+			{
+				if(x >= width || x < 0) continue;
+				int iY = x - ox;
+				pix[iX + iY * w] = pixels[x + y * width]; 
+			}
+		}
 	}
 }
