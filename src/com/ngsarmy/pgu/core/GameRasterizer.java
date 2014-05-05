@@ -123,12 +123,16 @@ public class GameRasterizer
 	// of the current color
 	public void renderFilledRectangle(int _x, int _y, int _w, int _h)
 	{
+		if (_x + _w < 0) return;
+		if (_y + _h < 0) return;
+		if (_x > width) return;
+		if (_y > height) return;
 		for(int y = _y; y < _y + _h; y++)
 		{
-			if(y >= height) continue;
+			if (y >= height || y < 0) continue;
 			for(int x = _x; x < _x + _w; x++)
 			{
-				if(x >= height) continue;
+				if(x >= width || x < 0) continue;
 				pixels[x + y * width] = color;
 			}
 		}
