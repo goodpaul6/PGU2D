@@ -13,10 +13,12 @@ public class GameEventManager
 	private static Stack<GameEvent> eventQueue = new Stack<GameEvent>();
 	
 	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY 
-	public static void pushButtonPressEvent(int button)
+	public static void pushButtonPressEvent(int button, int x, int y)
 	{
 		GameEvent ev = new GameEvent();
 		ev.button = button;
+		ev.x = x;
+		ev.y = y;
 		ev.type = GameEventType.E_MOUSE_BUTTON_PRESSED;
 		eventQueue.push(ev);
 	}

@@ -8,7 +8,6 @@ import com.ngsarmy.pgu.core.GameEventType;
 import com.ngsarmy.pgu.core.GameImage;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
-import com.ngsarmy.pgu.core.GameText;
 import com.ngsarmy.pgu.input.GameKeyboard;
 import com.ngsarmy.pgu.utils.GameTimer;
 
