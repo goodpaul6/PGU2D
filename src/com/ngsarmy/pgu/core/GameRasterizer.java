@@ -199,6 +199,10 @@ public class GameRasterizer
 			pix[i] = pixels[i];
 	}
 	
+	// USAGE:
+	// This function can essentially copy a region of the screen into a buffer
+	// which can be displayed afterwards or through GameImage, can be converted 
+	// to an image and saved to a file
 	public void getRasterRegion(int[] pix, int ox, int oy, int w, int h) throws Exception
 	{
 		if(ox + w < 0) return;

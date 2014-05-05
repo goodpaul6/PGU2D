@@ -2,6 +2,7 @@ package com.ngsarmy.pgu.core;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -30,6 +31,16 @@ public class GameImage
 		mask = 0xff00ff;	// by default magenta will be the mask color
 	}
 	
+	// create a game image from pixel data
+	public GameImage(int[] data, int w, int h)
+	{
+		alpha = 255;
+		mask = 0xff00ff;
+		pixels = data;
+		width = w;
+		height = h;
+	}
+	
 	// USAGE:
 	// loads image data from filename denoted by filepath, returns false if unsuccessful
 	public boolean loadFromFile(String filePath)
@@ -46,6 +57,26 @@ public class GameImage
 			image.getRGB(0, 0, width, height, pixels, 0, width);
 		}
 		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	// USAGE: 
+	// saves the data of an image to a file (i.e for screenshots), returns false if unsuccessful
+	public boolean saveToFile(String filePath)
+	{
+		BufferedImage image = null;
+		
+		try
+		{
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			image.setRGB(0, 0, width, height, pixels, 0, width);
+			ImageIO.write(image, "png", new File(filePath));
+		}
+		catch(IOException e)
 		{
 			e.printStackTrace();
 			return false;
