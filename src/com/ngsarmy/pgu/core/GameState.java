@@ -1,5 +1,7 @@
 package com.ngsarmy.pgu.core;
 
+import com.ngsarmy.pgu.entity.GameObjectManager;
+
 /* GameState class usage:
  * inherit from this class and 
  * overload the methods in order
@@ -7,7 +9,7 @@ package com.ngsarmy.pgu.core;
  * state which can be transtioned
  * to and from.
  */
-public class GameState 
+public class GameState extends GameObjectManager
 {
 	protected Game game;
 	
