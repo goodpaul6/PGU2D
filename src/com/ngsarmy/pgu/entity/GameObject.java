@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ngsarmy.pgu.core.GameEvent;
+import com.ngsarmy.pgu.core.GameImage;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
 import com.ngsarmy.pgu.utils.Rectangle;
@@ -45,6 +46,39 @@ public class GameObject
 		return rectangle.position;
 	}
 	
+	public Vector2 getSize()
+	{
+		return rectangle.size;
+	}
+	
+	public void setPos(Vector2 pos)
+	{
+		rectangle.position = pos;
+	}
+	
+	public void setPos(float x, float y)
+	{
+		rectangle.position.x = x;
+		rectangle.position.y = y;
+	}
+	
+	public void setHitbox(Vector2 size)
+	{
+		rectangle.size = size;
+	}
+	
+	public void setHitbox(float w, float h)
+	{
+		rectangle.size.x = w;
+		rectangle.size.y = h;
+	}
+	
+	public void setHitbox(GameImage image)
+	{
+		rectangle.size.x = image.getWidth();
+		rectangle.size.y = image.getHeight();
+	}
+	
 	public float getTop()
 	{
 		return rectangle.position.y;
@@ -63,6 +97,36 @@ public class GameObject
 	public float getRight()
 	{
 		return rectangle.position.x + rectangle.size.x;
+	}
+	
+	public float getWidth()
+	{
+		return rectangle.size.x;
+	}
+	
+	public float getHeight()
+	{
+		return rectangle.size.y;
+	}
+	
+	public void setRight(float v)
+	{
+		rectangle.position.x = v - rectangle.size.x;
+	}
+	
+	public void setLeft(float v)
+	{
+		rectangle.position.x = v;
+	}
+	
+	public void setBottom(float v)
+	{
+		rectangle.position.y = v - rectangle.size.y;
+	}
+	
+	public void setTop(float v)
+	{
+		rectangle.position.y = v;
 	}
 	
 	protected void moveBy(float x, float y, String type)

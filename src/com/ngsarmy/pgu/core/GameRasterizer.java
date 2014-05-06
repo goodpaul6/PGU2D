@@ -113,7 +113,7 @@ public class GameRasterizer
 		for(int y = 0; y < h; y++)
 		{
 			rX = _x + w;
-			rY = _y;
+			rY = _y + y;
 			renderPixel(rX, rY, color);
 		}
 	}

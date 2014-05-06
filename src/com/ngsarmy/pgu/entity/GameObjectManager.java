@@ -9,6 +9,8 @@ import com.ngsarmy.pgu.core.GameState;
 
 public class GameObjectManager 
 {
+	public static final int MAX_LAYER = 5;
+	
 	static enum Action
 	{
 		ADD_GO,
@@ -53,8 +55,26 @@ public class GameObjectManager
 	
 	public void render(GameRasterizer g)
 	{
+		for(int l = 0; l <= MAX_LAYER; l++)
+		{	
+			for(int i = 0; i < objectList.size(); i++)
+			{
+				GameObject go = objectList.get(i);
+				
+				if(go.layer == l)
+					go.render(g);
+			}
+		}
+	}
+	
+	protected void debug(GameRasterizer g)
+	{
 		for(int i = 0; i < objectList.size(); i++)
-			objectList.get(i).render(g);
+		{
+			GameObject go = objectList.get(i);
+			g.setColor(0xff0000);
+			g.renderLineRectangle((int)go.getLeft(), (int)go.getTop(), (int)go.getWidth(), (int)go.getHeight());
+		}
 	}
 	
 	public GameObject add(GameObject object)

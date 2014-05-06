@@ -14,10 +14,10 @@ public class Blocker extends GameObject
 		super(pos, "test");
 		image = new GameImage();
 		
-		if(!image.loadFromFile("res/PGULogo.png"))
+		if(!image.loadFromFile("res/PGUFont.png"))
 			System.exit(-100);
-		rectangle.size.x = image.getWidth();
-		rectangle.size.y = image.getHeight();
+		
+		setHitbox(image);
 	}
 	
 	public void update(double delta)

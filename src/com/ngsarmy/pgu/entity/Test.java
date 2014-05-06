@@ -23,8 +23,7 @@ public class Test extends GameObject
 		
 		if(!image.loadFromFile("res/PGULogo.png"))
 			System.exit(-100);
-		rectangle.size.x = image.getWidth();
-		rectangle.size.y = image.getHeight();
+		setHitbox(image);
 	}
 	
 	public void update(double delta)
@@ -46,7 +45,7 @@ public class Test extends GameObject
 		
 		if(getBottom() >= 480)
 		{
-			rectangle.position.y = 480 - rectangle.size.y;
+			setBottom(480);
 			if(velocity.y > 0)
 				velocity.y = 0;
 			grounded = true;
@@ -60,7 +59,7 @@ public class Test extends GameObject
 	@Override
 	public boolean moveCollideY(GameObject go)
 	{
-		if(go.getTop() < getTop())
+		if(go.getTop() < getBottom())
 			return false;
 		else if(go.getTop() + velocity.y > getBottom())
 		{
