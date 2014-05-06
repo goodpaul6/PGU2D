@@ -131,11 +131,14 @@ public class GameObject
 	
 	protected void moveBy(float x, float y, String type)
 	{
+		List<GameObject> possible = new ArrayList<GameObject>();
+		state.getObjectsWithType(type, possible);
+		
 		for(int i = 0; i < GAMEOBJECT_COLLISION_SAMPLE_FACTOR; i++)
 		{
 			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
 			
-			GameObject go = collide(rectangle.position.x + x / divisor, rectangle.position.y, type);
+			GameObject go = collideList(rectangle.position.x + x / divisor, rectangle.position.y, possible);
 			
 			if(go != null)
 			{
@@ -150,7 +153,7 @@ public class GameObject
 		{
 			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
 			
-			GameObject go = collide(rectangle.position.x, rectangle.position.y + y / divisor, type);
+			GameObject go = collideList(rectangle.position.x, rectangle.position.y + y / divisor, possible);
 			
 			if(go != null)
 			{
@@ -239,5 +242,19 @@ public class GameObject
 			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
+	}
+	
+	protected GameObject collideList(float x, float y, List<GameObject> objs)
+	{
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
+
+		for(int i = 0; i < objs.size(); i++)
+		{
+			GameObject go = objs.get(i);
+			
+			if(go != this && go.collidable && go.rectangle.collide(temp))
+				return go;
+		}
+		return null;
 	}
 }

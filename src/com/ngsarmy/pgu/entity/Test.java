@@ -2,28 +2,25 @@ package com.ngsarmy.pgu.entity;
 
 import java.awt.event.KeyEvent;
 
+import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
-import com.ngsarmy.pgu.core.GameImage;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.input.GameKeyboard;
 import com.ngsarmy.pgu.utils.Vector2;
 
 public class Test extends GameObject
 {
-	private GameImage image;
 	private Vector2 velocity;
 	private boolean grounded = false;
 	
 	public Test()
 	{
 		super(new Vector2(100, 100), "test");
-		image = new GameImage();
 		velocity = new Vector2();
 		
-		if(!image.loadFromFile("res/PGULogo.png"))
-			System.exit(-100);
-		setHitbox(image);
+		name = "player";
+		setHitbox(GameAssets.PGULogoImage);
 	}
 	
 	public void update(double delta)
@@ -57,6 +54,14 @@ public class Test extends GameObject
 	}
 	
 	@Override
+	public boolean moveCollideX(GameObject go)
+	{
+		if(go.getTop() < getBottom())
+			return false;
+		return true;
+	}
+	
+	@Override
 	public boolean moveCollideY(GameObject go)
 	{
 		if(go.getTop() < getBottom())
@@ -77,6 +82,7 @@ public class Test extends GameObject
 	
 	public void render(GameRasterizer g)
 	{
-		g.renderImage(image, (int)getLeft(), (int)getTop());
+		g.setColor(0xffffff);
+		g.renderImage(GameAssets.PGULogoImage, (int)getLeft(), (int)getTop());
 	}
 }

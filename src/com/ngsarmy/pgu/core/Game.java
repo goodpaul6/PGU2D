@@ -111,6 +111,7 @@ public class Game implements Runnable
 		Game.width = 640;
 		Game.height = 480;
 		Game.scale = 1;
+		GameAssets.load();
 		Game game = new Game();
 		game.states.pushState(new LogoState(game));
 		game.start();

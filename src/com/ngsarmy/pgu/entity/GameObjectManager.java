@@ -6,10 +6,12 @@ import java.util.List;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
+import com.ngsarmy.pgu.core.GameText;
 
 public class GameObjectManager 
 {
 	public static final int MAX_LAYER = 5;
+	private GameText debugText;
 	
 	static enum Action
 	{
@@ -35,6 +37,10 @@ public class GameObjectManager
 	public GameObjectManager()
 	{
 		objectList = new ArrayList<GameObject>();
+		debugText = new GameText();
+		
+		if(!debugText.loadFont("res/PGUFont.png", 8, 8))
+			System.exit(-1);
 	}
 	
 	public void event(GameEvent ev)
@@ -74,6 +80,13 @@ public class GameObjectManager
 			GameObject go = objectList.get(i);
 			g.setColor(0xff0000);
 			g.renderLineRectangle((int)go.getLeft(), (int)go.getTop(), (int)go.getWidth(), (int)go.getHeight());
+			g.setColor(0xffffff);
+			debugText.setText("name: " + go.name);
+			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 10);
+			debugText.setText("type: " + go.type);
+			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 20);
+			debugText.setText("layer: " + go.layer);
+			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 30);
 		}
 	}
 	

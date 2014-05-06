@@ -41,4 +41,13 @@ public class GameUtils
 
 	    return 0xFF0000 | Red | Green | Blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
 	}
+	
+	// USAGE:
+	// decomposes the (x) [where x = 0 is red, x = 1 is green, x = 2 is blue) color value out of a hex color encoded 0xffffff
+	public static int decomposeRgb(int rgbHex, int x)
+	{
+		int actual = 2 - x;
+		
+		return (rgbHex >> actual * 8) & 0xff;
+	}
 }

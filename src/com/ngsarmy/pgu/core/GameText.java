@@ -11,13 +11,13 @@ public class GameText
 	private GameImage fontImage;
 	// width and height of each character
 	private int width, height;
+	// raw text data
+	private String text;
 	// supported characters:
 	// you can and should change this depending on the bitmap font file
 	// this represents the layout of the image font file and is the reference
 	// for the renderer to find the appropriate image for each letter.
-	public String charSet =	"abcdefghijklmnopqrstuvwxyz" +
-							"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-							"1234567890";
+	public String charSet =	"abcdefghijklmnopqrstuvwxyz .:,1234567890";
 	// this will store the character indexes (relative to bitmap) for faster rendering
 	private int[] charPos;
 
@@ -39,9 +39,21 @@ public class GameText
 	}
 	
 	// USAGE:
+	// sets the charset of the text (i.e index data)
+	public void setCharset(String set)
+	{
+		charSet = set;
+		
+		if(charPos != null)
+		for(int i = 0; i < charPos.length; i++)
+			charPos[i] = charSet.indexOf(text.charAt(i));
+	}
+	
+	// USAGE:
 	// sets the text to be rendered onto the screen
 	public void setText(String text)
 	{
+		this.text = text;
 		charPos = new int[text.length()];
 		for(int i = 0; i < text.length(); i++)
 			charPos[i] = charSet.indexOf(text.charAt(i));

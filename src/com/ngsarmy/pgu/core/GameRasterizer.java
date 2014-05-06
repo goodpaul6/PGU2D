@@ -183,9 +183,9 @@ public class GameRasterizer
 				int pb = (pcol      ) & 0xff; 
 				
 				int nr, ng, nb;
-				nr = Math.min((int)(cr * (alpha / 255.0) + pr), 255);
-				ng = Math.min((int)(cg * (alpha / 255.0) + pg), 255);
-				nb = Math.min((int)(cb * (alpha / 255.0) + pb), 255);
+				nr = (int) (Math.min((int)(cr * (alpha / 255.0) + pr), 255) * (GameUtils.decomposeRgb(color, 0) / 255f));
+				ng = (int) (Math.min((int)(cg * (alpha / 255.0) + pg), 255) * (GameUtils.decomposeRgb(color, 1) / 255f));
+				nb = (int) (Math.min((int)(cb * (alpha / 255.0) + pb), 255) * (GameUtils.decomposeRgb(color, 2) / 255f));
 				
 				pixels[rX + rY * width] = GameUtils.mapRgb(nr, ng, nb);
 			}
