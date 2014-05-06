@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameRasterizer;
+import com.ngsarmy.pgu.core.GameState;
 
 public class GameObjectManager 
 {
@@ -58,6 +59,7 @@ public class GameObjectManager
 	
 	public GameObject add(GameObject object)
 	{
+		object.state = (GameState)this;
 		pendingChangeList.add(new PendingChange(Action.ADD_GO, object));
 		return object;
 	}

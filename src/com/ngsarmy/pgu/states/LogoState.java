@@ -8,10 +8,12 @@ import com.ngsarmy.pgu.core.GameEventType;
 import com.ngsarmy.pgu.core.GameImage;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
+import com.ngsarmy.pgu.entity.Blocker;
 import com.ngsarmy.pgu.entity.GameObject;
 import com.ngsarmy.pgu.entity.Test;
 import com.ngsarmy.pgu.input.GameKeyboard;
 import com.ngsarmy.pgu.utils.GameTimer;
+import com.ngsarmy.pgu.utils.Vector2;
 
 public class LogoState extends GameState
 {
@@ -36,6 +38,8 @@ public class LogoState extends GameState
 
 		e = new Test();
 		add(e);
+		add(new Blocker(new Vector2(100, 0)));
+		add(new Blocker(new Vector2(100, 400)));
 	}
 
 	public void event(GameEvent ev)

@@ -12,7 +12,7 @@ import com.ngsarmy.pgu.utils.Vector2;
 public class GameObject 
 {
 	private final int GAMEOBJECT_COLLISION_SAMPLE_FACTOR = 5;
-	private GameState state;
+	public GameState state;
 	public Rectangle rectangle;
 	public String name;
 	public String type;
@@ -78,6 +78,8 @@ public class GameObject
 				if(moveCollideX(go)) return;
 				else rectangle.position.x += x / divisor;
 			}
+			else
+				rectangle.position.x += x / divisor;
 			
 			go = collide(rectangle.position.x, rectangle.position.y + y / divisor, type);
 			
@@ -86,6 +88,8 @@ public class GameObject
 				if(moveCollideY(go)) return;
 				else rectangle.position.y += y / divisor;
 			}
+			else
+				rectangle.position.y += y / divisor;
 		}
 	}
 	
@@ -104,13 +108,13 @@ public class GameObject
 		List<GameObject> objs = new ArrayList<GameObject>();
 		state.getObjectsWithType(type, objs);
 		
-		Rectangle temp = new Rectangle(rectangle.position.x + x, rectangle.position.y + y, rectangle.size.x, rectangle.size.y);
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
 		for(int i = 0; i < objs.size(); i++)
 		{
 			GameObject go = objs.get(i);
 			
-			if(go.collidable && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		
@@ -123,13 +127,13 @@ public class GameObject
 		for(int i = 0; i < types.length; i++)
 			state.getObjectsWithType(types[i], objs);
 		
-		Rectangle temp = new Rectangle(rectangle.position.x + x, rectangle.position.y + y, rectangle.size.x, rectangle.size.y);
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
 		for(int i = 0; i < objs.size(); i++)
 		{
 			GameObject go = objs.get(i);
 			
-			if(go.collidable && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		return null;
@@ -140,13 +144,13 @@ public class GameObject
 		List<GameObject> possible = new ArrayList<GameObject>();
 		state.getObjectsWithType(type, possible);
 		
-		Rectangle temp = new Rectangle(rectangle.position.x + x, rectangle.position.y + y, rectangle.size.x, rectangle.size.y);
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
 		for(int i = 0; i < possible.size(); i++)
 		{
 			GameObject go = possible.get(i);
 			
-			if(go.collidable && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
@@ -157,13 +161,13 @@ public class GameObject
 		for(int i = 0; i < types.length; i++)
 			state.getObjectsWithType(types[i], possible);
 		
-		Rectangle temp = new Rectangle(rectangle.position.x + x, rectangle.position.y + y, rectangle.size.x, rectangle.size.y);
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
 		for(int i = 0; i < possible.size(); i++)
 		{
 			GameObject go = possible.get(i);
 			
-			if(go.collidable && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
