@@ -75,17 +75,22 @@ public class GameObject
 			
 			if(go != null)
 			{
-				if(moveCollideX(go)) return;
+				if(moveCollideX(go)) break;
 				else rectangle.position.x += x / divisor;
 			}
 			else
 				rectangle.position.x += x / divisor;
+		}
+		
+		for(int i = 0; i < GAMEOBJECT_COLLISION_SAMPLE_FACTOR; i++)
+		{
+			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
 			
-			go = collide(rectangle.position.x, rectangle.position.y + y / divisor, type);
+			GameObject go = collide(rectangle.position.x, rectangle.position.y + y / divisor, type);
 			
 			if(go != null)
 			{
-				if(moveCollideY(go)) return;
+				if(moveCollideY(go)) break;
 				else rectangle.position.y += y / divisor;
 			}
 			else
