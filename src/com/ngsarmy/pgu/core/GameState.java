@@ -23,14 +23,14 @@ public class GameState extends GameObjectManager
 	public void load() {}
 	// USAGE:
 	// this is called every frame therefore all logic should be in here
-	public void update(double delta) {}
+	public void update(double delta) {super.update(delta);}
 	// USAGE:
 	// this is called every frame and all drawing code should be in here
-	public void render(GameRasterizer g) {}
+	public void render(GameRasterizer g) {super.render(g);}
 	// USAGE:
 	// this is called right at the end of the state (i.e transition) so it should be used for unloading and transitions.
 	public void unload() {}
 	// USAGE:
 	// this is called when an event is detected (i.e mouse click, keypress)
-	public void event(GameEvent ev) {}
+	public void event(GameEvent ev) {super.event(ev);}
 }

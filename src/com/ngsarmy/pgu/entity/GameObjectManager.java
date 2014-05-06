@@ -26,8 +26,8 @@ public class GameObjectManager
 		}
 	}
 	
-	private List<GameObject> objectList;
-	private List<PendingChange> pendingChangeList;
+	private List<GameObject> objectList = new ArrayList<GameObject>();
+	private List<PendingChange> pendingChangeList = new ArrayList<PendingChange>();
 	
 	public GameObjectManager()
 	{
@@ -115,5 +115,6 @@ public class GameObjectManager
 				break;
 			}
 		}
+		pendingChangeList.clear();
 	}
 }

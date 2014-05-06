@@ -10,7 +10,7 @@ public class Game implements Runnable
 {
 	public static int width = 480;
 	public static int height = 240;
-	public static int scale = 3;
+	public static int scale = 1;
 	
 	private GameCanvas canvas;
 	
@@ -108,9 +108,9 @@ public class Game implements Runnable
 	
 	public static void main(String[] args)
 	{
-		Game.width = 320;
-		Game.height = 240;
-		Game.scale = 3;
+		Game.width = 640;
+		Game.height = 480;
+		Game.scale = 1;
 		Game game = new Game();
 		game.states.pushState(new LogoState(game));
 		game.start();

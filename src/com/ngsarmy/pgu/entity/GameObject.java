@@ -11,6 +11,7 @@ import com.ngsarmy.pgu.utils.Vector2;
 
 public class GameObject 
 {
+	private final int GAMEOBJECT_COLLISION_SAMPLE_FACTOR = 5;
 	private GameState state;
 	public Rectangle rectangle;
 	public String name;
@@ -64,6 +65,40 @@ public class GameObject
 		return rectangle.position.x + rectangle.size.x;
 	}
 	
+	protected void moveBy(float x, float y, String type)
+	{
+		for(int i = 0; i < GAMEOBJECT_COLLISION_SAMPLE_FACTOR; i++)
+		{
+			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
+			
+			GameObject go = collide(rectangle.position.x + x / divisor, rectangle.position.y, type);
+			
+			if(go != null)
+			{
+				if(moveCollideX(go)) return;
+				else rectangle.position.x += x / divisor;
+			}
+			
+			go = collide(rectangle.position.x, rectangle.position.y + y / divisor, type);
+			
+			if(go != null)
+			{
+				if(moveCollideY(go)) return;
+				else rectangle.position.y += y / divisor;
+			}
+		}
+	}
+	
+	protected boolean moveCollideX(GameObject go)
+	{
+		return true;
+	}
+	
+	protected boolean moveCollideY(GameObject go)
+	{
+		return true;
+	}
+	
 	protected GameObject collide(float x, float y, String type)
 	{
 		List<GameObject> objs = new ArrayList<GameObject>();
@@ -75,7 +110,7 @@ public class GameObject
 		{
 			GameObject go = objs.get(i);
 			
-			if(go.rectangle.collide(temp))
+			if(go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		
@@ -94,7 +129,7 @@ public class GameObject
 		{
 			GameObject go = objs.get(i);
 			
-			if(go.rectangle.collide(temp))
+			if(go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		return null;
@@ -111,7 +146,7 @@ public class GameObject
 		{
 			GameObject go = possible.get(i);
 			
-			if(go.rectangle.collide(temp))
+			if(go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
@@ -128,7 +163,7 @@ public class GameObject
 		{
 			GameObject go = possible.get(i);
 			
-			if(go.rectangle.collide(temp))
+			if(go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
