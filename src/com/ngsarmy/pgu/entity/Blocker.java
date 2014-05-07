@@ -10,10 +10,15 @@ public class Blocker extends GameObject
 	public Blocker(Vector2 pos)
 	{
 		super(pos, "test");
+	}
+	
+	@Override
+	public void added()
+	{
 		layer = 0;
 		
 		if((int)(Math.random() * 2) == 1)
-			collidable = false;
+			setCollidable(false);
 		
 		setHitbox(GameAssets.brickTile);
 	}
@@ -28,8 +33,8 @@ public class Blocker extends GameObject
 	
 	public void render(GameRasterizer g)
 	{
-		g.setColor(0xff0000);
-		GameAssets.brickTile.setAlpha(255);
+		g.setColor((int)(getCollidable() ? 0xffffff : 0xffffff * Math.random()));
+		GameAssets.brickTile.setAlpha(getCollidable() ? 255 : (int)(Math.random() * 255));
 		g.renderImage(GameAssets.brickTile, (int)getLeft(), (int)getTop());
 	}
 }

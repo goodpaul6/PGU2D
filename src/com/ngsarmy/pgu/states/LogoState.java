@@ -25,8 +25,8 @@ public class LogoState extends GameState
 
 		for(int i = 0; i < 20; i++)
 		{	
-			add(new Blocker(new Vector2(128 * (i / 2) % Game.width, 200)));
-			add(new Blocker(new Vector2(128 * (i / 2) % Game.width, 400)));
+			add(new Blocker(new Vector2(32 * i % Game.width, 200 + i * 5)));
+			add(new Blocker(new Vector2(32 * i % Game.width, 400 + i * 5)));
 		}
 	}
 
@@ -54,7 +54,6 @@ public class LogoState extends GameState
 	{
 		g.clearToColor(0x222333);
 		super.render(g);
-		debug(g);
 	}
 	
 	public void unload()

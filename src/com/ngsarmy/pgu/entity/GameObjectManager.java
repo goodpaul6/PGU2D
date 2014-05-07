@@ -22,7 +22,9 @@ public class GameObjectManager
 	static enum Action
 	{
 		ADD_GO,
-		REM_GO
+		REM_GO,
+		ADD_COLLIDABLE,
+		REM_COLLIDABLE
 	}
 	
 	static class PendingChange
@@ -38,7 +40,9 @@ public class GameObjectManager
 	}
 	
 	private List<GameObject> objectList = new ArrayList<GameObject>();
-	private List<PendingChange> pendingChangeList = new ArrayList<PendingChange>();
+	private List<GameObject> collidableObjectList = new ArrayList<GameObject>();
+	private List<PendingChange> objectChangeList = new ArrayList<PendingChange>();
+	private List<PendingChange> collidableChangeList = new ArrayList<PendingChange>();
 	
 	public GameObjectManager()
 	{
@@ -55,6 +59,7 @@ public class GameObjectManager
 			objectList.get(i).event(ev);
 		
 		applyPendingChanges();
+		applyCollidablePendingChanges();
 	}
 	
 	public void update(double delta)
@@ -63,6 +68,7 @@ public class GameObjectManager
 			objectList.get(i).update(delta);
 		
 		applyPendingChanges();
+		applyCollidablePendingChanges();
 	}
 	
 	public void render(GameRasterizer g)
@@ -93,21 +99,33 @@ public class GameObjectManager
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 20);
 			debugText.setText("layer: " + go.layer);
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 30);
-			debugText.setText("collidable: " + go.collidable);
+			debugText.setText("collidable: " + go.getCollidable());
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 40);
 		}
+	}
+	
+	public void addAsCollidable(GameObject object)
+	{
+		collidableChangeList.add(new PendingChange(Action.ADD_COLLIDABLE, object));
+	}
+	
+	public void removeAsCollidable(GameObject object)
+	{
+		collidableChangeList.add(new PendingChange(Action.REM_COLLIDABLE, object));
 	}
 	
 	public GameObject add(GameObject object)
 	{
 		object.state = (GameState)this;
-		pendingChangeList.add(new PendingChange(Action.ADD_GO, object));
+		collidableChangeList.add(new PendingChange(Action.ADD_COLLIDABLE, object));
+		objectChangeList.add(new PendingChange(Action.ADD_GO, object));
 		return object;
 	}
 	
 	public void remove(GameObject object)
 	{
-		pendingChangeList.add(new PendingChange(Action.REM_GO, object));
+		collidableChangeList.add(new PendingChange(Action.REM_COLLIDABLE, object));
+		objectChangeList.add(new PendingChange(Action.REM_GO, object));
 	}
 	
 	public GameObject getObjectWithName(String name)
@@ -142,22 +160,76 @@ public class GameObjectManager
 		}
 	}
 	
+	public GameObject getCollidableWithName(String name)
+	{
+		for(int i = 0; i < collidableObjectList.size(); i++)
+		{
+			GameObject go = collidableObjectList.get(i);
+			if(go.name.equals(name))
+				return go;
+		}
+		return null;
+	}
+	
+	public void getCollidableWithType(String type, List<GameObject> objs)
+	{
+		for(int i = 0; i < collidableObjectList.size(); i++)
+		{
+			GameObject go = collidableObjectList.get(i);
+			if(go.type.equals(type))
+				objs.add(go);
+		}
+	}
+	
+	public void getCollidableWithLayer(int layer, List<GameObject> objs)
+	{
+		for(int i = 0; i < collidableObjectList.size(); i++)
+		{
+			GameObject go = collidableObjectList.get(i);
+			if(go.layer == layer)
+				objs.add(go);
+		}
+	}
+	
 	private void applyPendingChanges()
 	{
-		for(int i = 0; i < pendingChangeList.size(); i++)
+		for(int i = 0; i < objectChangeList.size(); i++)
 		{
-			PendingChange change = pendingChangeList.get(i);
+			PendingChange change = objectChangeList.get(i);
 			
 			switch(change.action)
 			{
 			case ADD_GO:
 				objectList.add(change.ent);
+				change.ent.added();
 				break;
 			case REM_GO:
 				objectList.remove(change.ent);
+				change.ent.removed();
 				break;
+			default:
 			}
 		}
-		pendingChangeList.clear();
+		objectChangeList.clear();
+	}
+	
+	private void applyCollidablePendingChanges()
+	{
+		for(int i = 0; i < collidableChangeList.size(); i++)
+		{
+			PendingChange change = collidableChangeList.get(i);
+			
+			switch(change.action)
+			{
+			case ADD_COLLIDABLE:
+				collidableObjectList.add(change.ent);
+				break;
+			case REM_COLLIDABLE:
+				collidableObjectList.remove(change.ent);
+				break;
+			default:
+			}
+		}
+		collidableChangeList.clear();
 	}
 }
