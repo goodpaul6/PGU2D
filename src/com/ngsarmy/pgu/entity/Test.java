@@ -22,10 +22,10 @@ public class Test extends GameObject
 		super(new Vector2(100, 100), "test");
 		velocity = new Vector2();
 		anim = new Animator();
-		anim.add("alphabet", new Animation(GameAssets.PGUFontText.getFontImage(), 8, 8, new int[]{0, 1, 20, 3, 10, 5, 6, 7}, 2));
+		anim.add("alphabet", new Animation(GameAssets.PGUFontText.getFontImage(), 8, 8, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}, 2));
 		name = "player";
 		layer = 1;
-		setHitbox(32, 42);
+		setHitbox(8, 8);
 	}
 	
 	public void update(double delta)

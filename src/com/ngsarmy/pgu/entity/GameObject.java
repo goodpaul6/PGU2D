@@ -171,6 +171,20 @@ public class GameObject
 		}
 	}
 	
+	protected void moveTo(float x, float y)
+	{
+		rectangle.position.x = x;
+		rectangle.position.y = y;
+	}
+	
+	protected void moveTo(float x, float y, String type)
+	{
+		float xDiff = x - rectangle.position.x;
+		float yDiff = y - rectangle.position.y;
+		
+		moveBy(xDiff, yDiff, type);
+	}
+	
 	protected boolean moveCollideX(GameObject go)
 	{
 		return true;
@@ -254,7 +268,7 @@ public class GameObject
 	{
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
-		if(go.rectangle.collide(temp))
+		if(go.collidable && go.rectangle.collide(temp))
 			return true;
 		return false;
 	}

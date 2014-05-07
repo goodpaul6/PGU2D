@@ -12,6 +12,7 @@ public class GameAssets
 {
 	public static GameImage PGULogoImage = new GameImage();
 	public static GameText PGUFontText = new GameText();
+	public static GameImage brickTile = new GameImage();
 	
 	// WARNING:
 	// Do not call this directly, it is called internally
@@ -21,6 +22,8 @@ public class GameAssets
 		if(!PGULogoImage.loadFromFile("res/PGULogo.png"))
 			System.exit(-1);
 		if(!PGUFontText.loadFont("res/PGUFont.png", 8, 8))
+			System.exit(-1);
+		if(!brickTile.loadFromFile("res/BrickTile.png"))
 			System.exit(-1);
 
 		PGUFontText.setCharset("abcdefghijklmnopqrstuvwxyz .:,1234567890");

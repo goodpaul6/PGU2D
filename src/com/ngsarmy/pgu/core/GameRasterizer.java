@@ -47,9 +47,8 @@ public class GameRasterizer
 	
 	public void clearToColor(int _color)
 	{
-		color = _color;
 		for(int i = 0; i < pixels.length; i++)
-			pixels[i] = color;
+			pixels[i] = _color;
 	}
 	
 	public void renderText(GameText text, int _x, int _y)
