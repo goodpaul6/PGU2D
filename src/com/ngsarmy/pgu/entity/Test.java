@@ -24,7 +24,8 @@ public class Test extends GameObject
 		anim = new Animator();
 		anim.add("alphabet", new Animation(GameAssets.PGUFontText.getFontImage(), 8, 8, new int[]{0, 1, 20, 3, 10, 5, 6, 7}, 2));
 		name = "player";
-		setHitbox(8, 8);
+		layer = 1;
+		setHitbox(32, 42);
 	}
 	
 	public void update(double delta)
@@ -94,7 +95,7 @@ public class Test extends GameObject
 	
 	public void render(GameRasterizer g)
 	{
-		g.setColor(0xffffff);
-		g.renderImage(GameAssets.PGULogoImage, (int)getLeft(), (int)getTop(), 30);
+		g.setColor(0xff2344);
+		g.renderAnimator(anim, (int)getLeft(), (int)getTop());
 	}
 }

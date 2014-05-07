@@ -96,7 +96,6 @@ public class Game implements Runnable
 	private void render()
 	{
 		GameRasterizer rst = canvas.getRasterizer();
-		rst.clearToColor(0);
 		states.render(rst);
 		rst.postProcess();
 		canvas.renderToScreen();

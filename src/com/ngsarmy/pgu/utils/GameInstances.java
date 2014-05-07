@@ -13,13 +13,13 @@ public class GameInstances
 	// global pixel buffer instance (initially 512x512)
 	// usage:
 	// for buffering rotation data
-	private static int[] buffer = new int[512 * 512];
+	private static int[] buffer = new int[256 * 256];
 	// is the buffer in use right now? because if it is, throw exception if someone allocates it/gets it again
 	private static boolean bufferInUse = false;
 	// current width of the buffer 
-	private static int bufferWidth = 512;
+	private static int bufferWidth = 256;
 	// current height of the buffer
-	private static int bufferHeight = 512;
+	private static int bufferHeight = 256;
 	// current user of buffer
 	private static String currentUser = "default";
 	
