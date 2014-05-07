@@ -2,6 +2,7 @@ package com.ngsarmy.pgu.core;
 
 import com.ngsarmy.pgu.graphicutils.Animation;
 import com.ngsarmy.pgu.graphicutils.Animator;
+import com.ngsarmy.pgu.utils.GameInstances;
 import com.ngsarmy.pgu.utils.GameUtils;
 
 /* GameRasterizer Class:
@@ -15,6 +16,9 @@ public class GameRasterizer
 	// unscaled width and height
 	private int width;
 	private int height;
+	
+	// last angle passed in as an arugment to rotated render method
+	private double lastAngle = 0;
 	
 	// publicly accessible pixel array
 	public int[] pixels;
@@ -81,18 +85,30 @@ public class GameRasterizer
 		if(_x >= width) return;
 		if(_y >= height) return;
 		
+		if(lastAngle == angle && GameInstances.isBufferAvailable("renderSubImage"))
+		{
+			double sin = Math.abs(Math.sin(angle));
+			double cos = Math.abs(Math.cos(angle));
+			int nw = (int)Math.floor(cos * _w + sin * _h);
+			int nh = (int)Math.floor(sin * _w + cos * _h);
+			int[] data = GameInstances.allocateBufferIf("renderSubImage", nw, nh);
+			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
+		}
+		
 		if(angle != 0 && angle != 360)
 		{
+			lastAngle = angle;
 			double sin = Math.abs(Math.sin(angle));
 			double cos = Math.abs(Math.cos(angle));
 			int nw, nh;
 			int w = _w, h = _h;
 			nw = (int)Math.floor(cos * w + sin * h);
 			nh = (int)Math.floor(sin * w + cos * h);
-			int[] data = new int[nw * nh];
+			int[] data = GameInstances.allocateBufferIf("renderSubImage", nw, nh);
 			
 			GameImage.rotateNearestNeigbour(angle, img.getRegionData(_sx, _sy, _w, _h), _w, _h, data, nw, nh);
 			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
+			GameInstances.freeBufferOwnership("renderSubImage");
 		}
 		else
 			renderBuffer(img.getData(), _sx, _sy, _x, _y, _w, _h, img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
@@ -105,18 +121,30 @@ public class GameRasterizer
 	
 	public void renderImage(GameImage img, int _x, int _y, double angle)
 	{	
+		if(lastAngle == angle && GameInstances.isBufferAvailable("renderImage"))
+		{
+			double sin = Math.abs(Math.sin(angle));
+			double cos = Math.abs(Math.cos(angle));
+			int nw = (int)Math.floor(cos * img.getWidth() + sin * img.getHeight());
+			int nh = (int)Math.floor(sin * img.getWidth() + cos * img.getHeight());
+			int[] data = GameInstances.allocateBufferIf("renderImage", nw, nh);
+			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
+		}
+		
 		if(angle != 0 && angle != 360)
 		{
+			lastAngle = angle;
 			double sin = Math.abs(Math.sin(angle));
 			double cos = Math.abs(Math.cos(angle));
 			int nw, nh;
 			int w = img.getWidth(), h = img.getHeight();
 			nw = (int)Math.floor(cos * w + sin * h);
 			nh = (int)Math.floor(sin * w + cos * h);
-			int[] data = new int[nw * nh];
+			int[] data = GameInstances.allocateBufferIf("renderImage", nw, nh);
 			
 			GameImage.rotateNearestNeigbour(angle, img.getData(), img.getWidth(), img.getHeight(), data, nw, nh);
 			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
+			GameInstances.freeBufferOwnership("renderImage");
 		}
 		else
 			renderImage(img, _x, _y);
@@ -275,5 +303,12 @@ public class GameRasterizer
 				pix[iX + iY * w] = pixels[x + y * width]; 
 			}
 		}
+	}
+	
+	// WARNING: DO NOT CALL THIS DIRECTLY
+	// This method will be called by the game class when all rendering is completed to allow
+	// for post processing of the pixels on the screen (i.e blurring, bloom, etc)
+	public void postProcess()
+	{
 	}
 }
