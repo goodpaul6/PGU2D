@@ -1,5 +1,7 @@
 package com.ngsarmy.pgu.core;
 
+import java.util.Arrays;
+
 import com.ngsarmy.pgu.graphicutils.Animation;
 import com.ngsarmy.pgu.graphicutils.Animator;
 import com.ngsarmy.pgu.utils.GameInstances;
@@ -47,8 +49,7 @@ public class GameRasterizer
 	
 	public void clearToColor(int _color)
 	{
-		for(int i = 0; i < pixels.length; i++)
-			pixels[i] = _color;
+		Arrays.fill(pixels, _color);
 	}
 	
 	public void renderText(GameText text, int _x, int _y)
@@ -207,15 +208,10 @@ public class GameRasterizer
 		if (_y + _h < 0) return;
 		if (_x > width) return;
 		if (_y > height) return;
-		for(int y = _y; y < _y + _h; y++)
-		{
-			if (y >= height || y < 0) continue;
-			for(int x = _x; x < _x + _w; x++)
-			{
-				if(x >= width || x < 0) continue;
-				pixels[x + y * width] = color;
-			}
-		}
+		int[] data = GameInstances.allocateBufferIf("renderFilledRectangle", _w, _h);
+		Arrays.fill(data, 0xffffff);
+		renderBuffer(data, 0, 0, _x, _y, _w, _h, 255, new GameColor(-1, -1, -1), _w, _h, 0);
+		GameInstances.freeBufferOwnership("renderFilledRectangle");
 	}
 	
 	// USAGE:
@@ -237,6 +233,7 @@ public class GameRasterizer
 		if(_y + h < 0) return;
 		if(_x > width) return;
 		if(_y > height) return;
+
 		for(int y = 0; y < h; y++)
 		{
 			if(y + oy >= scanHeight) break;
@@ -263,9 +260,9 @@ public class GameRasterizer
 				int pb = (pcol      ) & 0xff; 
 				
 				int nr, ng, nb;
-				nr = (int) (Math.min((int)(cr * (alpha / 255.0) + pr), 255) * (GameUtils.decomposeRgb(color, 0) / 255f));
-				ng = (int) (Math.min((int)(cg * (alpha / 255.0) + pg), 255) * (GameUtils.decomposeRgb(color, 1) / 255f));
-				nb = (int) (Math.min((int)(cb * (alpha / 255.0) + pb), 255) * (GameUtils.decomposeRgb(color, 2) / 255f));
+				nr = (int)(blend(cr, pr, alpha, GameUtils.decomposeRgb(color, 0)));
+				ng = (int)(blend(cg, pg, alpha, GameUtils.decomposeRgb(color, 1)));
+				nb = (int)(blend(cb, pb, alpha, GameUtils.decomposeRgb(color, 2)));
 				
 				pixels[rX + rY * width] = GameUtils.mapRgb(nr, ng, nb);
 			}
@@ -303,6 +300,15 @@ public class GameRasterizer
 			}
 		}
 	}
+	
+	// CALLBACK:
+	// This is the function called for blending r,g,b given src color and dest color with src alpha
+	// The default version is usually sutiable for most games
+	private float blend(int src, int dst, int srcA, int tint)
+	{
+		return (dst * (1 - srcA / 255f) + (src * (tint / 255f)) * (srcA / 255f));
+	}
+	
 	
 	// WARNING: DO NOT CALL THIS DIRECTLY
 	// This method will be called by the game class when all rendering is completed to allow

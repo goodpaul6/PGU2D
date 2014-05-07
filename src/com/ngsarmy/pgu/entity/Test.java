@@ -95,7 +95,7 @@ public class Test extends GameObject
 	
 	public void render(GameRasterizer g)
 	{
-		g.setColor(0xff2344);
+		g.setColor(0xffffff);
 		g.renderAnimator(anim, (int)getLeft(), (int)getTop());
 	}
 }

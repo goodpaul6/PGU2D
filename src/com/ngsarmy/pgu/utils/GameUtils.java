@@ -19,7 +19,7 @@ public class GameUtils
 	// gives r,g,b components of a hex color value
 	public static GameColor mapHex(int hex)
 	{
-		GameColor color = new GameColor();
+		GameColor color = new GameColor(0, 0, 0);
 		color.r = (hex >> 16) & 0xff;
 		color.g = (hex >>  8) & 0xff;
 		color.b = (hex      ) & 0xff;

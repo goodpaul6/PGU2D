@@ -28,7 +28,8 @@ public class Blocker extends GameObject
 	
 	public void render(GameRasterizer g)
 	{
-		g.setColor(0xffffff);
+		g.setColor(0xff0000);
+		GameAssets.brickTile.setAlpha(255);
 		g.renderImage(GameAssets.brickTile, (int)getLeft(), (int)getTop());
 	}
 }

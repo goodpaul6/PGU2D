@@ -8,6 +8,12 @@ import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
 import com.ngsarmy.pgu.core.GameText;
 
+// GameObjectManager class:
+// This class is a parent class
+// of a game state. It provides 
+// utilities for managing game 
+// objects, such as rendering,
+// finding, and deleting them
 public class GameObjectManager 
 {
 	public static final int MAX_LAYER = 5;
