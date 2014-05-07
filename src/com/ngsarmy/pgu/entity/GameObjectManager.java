@@ -87,6 +87,8 @@ public class GameObjectManager
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 20);
 			debugText.setText("layer: " + go.layer);
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 30);
+			debugText.setText("collidable: " + go.collidable);
+			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 40);
 		}
 	}
 	

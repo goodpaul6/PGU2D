@@ -22,10 +22,12 @@ public class LogoState extends GameState
 
 		e = new Test();
 		add(e);
-		add(new Blocker(new Vector2(100, 50)));
-		add(new Blocker(new Vector2(100, 300)));
-		add(new Blocker(new Vector2(400, 200)));
-		add(new Blocker(new Vector2(200, 200)));
+
+		for(int i = 0; i < 10; i++)
+		{	
+			add(new Blocker(new Vector2(32 * i, 200), 1));
+			add(new Blocker(new Vector2(32 * i, 380), -1));
+		}
 	}
 
 	public void event(GameEvent ev)
@@ -51,7 +53,6 @@ public class LogoState extends GameState
 	public void render(GameRasterizer g)
 	{
 		super.render(g);
-		debug(g);
 	}
 	
 	public void unload()

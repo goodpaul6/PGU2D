@@ -7,15 +7,28 @@ import com.ngsarmy.pgu.utils.Vector2;
 
 public class Blocker extends GameObject
 {
-	public Blocker(Vector2 pos)
+	private int moveDown;
+	private GameObject player = null;
+	
+	public Blocker(Vector2 pos, int down)
 	{
 		super(pos, "test");
+		moveDown = down;
 		name = "pretty much a mario platform";
 		setHitbox(GameAssets.PGULogoImage);
 	}
 	
 	public void update(double delta)
 	{
+		if(player == null)
+			player = state.getObjectWithName("player");
+		
+		moveBy(0, 10 * (float)delta * moveDown);
+		
+		if(moveDown == -1 && collideWith((int)getLeft(), (int)getTop() + (int)(10 * delta * moveDown), player))
+		{
+			player.moveBy(0, 10 * (float)delta * moveDown);
+		}
 	}
 	
 	public void event(GameEvent ev)

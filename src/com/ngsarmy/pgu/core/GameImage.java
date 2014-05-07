@@ -125,7 +125,8 @@ public class GameImage
 	// USAGE:
 	// scales image to given size using the (fastest) scaling algorithm (nearest neighbor)
 	// it should be sufficient for pretty much all 2d texture scaling (but may cause jagged edges)
-	public void scale(int nw, int nh)
+	// NOTE: returns an instance of itself for chaining image changes
+	public GameImage scale(int nw, int nh)
 	{
 		int[] temp = new int[nw * nh];
 		
@@ -148,6 +149,8 @@ public class GameImage
 	    	pixels[i] = temp[i];
 	    width = nw;
 	    height = nh;
+	    
+	    return this;
 	}
 	
 	// INTERNAL FUNCTION:
@@ -171,7 +174,8 @@ public class GameImage
 
 	// USAGE:
 	// rotates image to desired rotation using the (fastest) rotation algorithm (nearest neighbor)
-	public void rotate(double angle)
+	// NOTE: returns an instance of this for chaining operations
+	public GameImage rotate(double angle)
 	{
 		int[] npixels = new int[(width * 2) * (height * 2)];
  		rotateNearestNeigbour(angle, pixels, width, height, npixels, width * 2, height * 2);
@@ -180,6 +184,8 @@ public class GameImage
  		height *= 2;
  		for(int i = 0; i < pixels.length; i++)
  			pixels[i] = npixels[i];
+ 		
+ 		return this;
 	}
 	
 	public void setAlpha(int alpha) 

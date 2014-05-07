@@ -129,6 +129,12 @@ public class GameObject
 		rectangle.position.y = v;
 	}
 	
+	protected void moveBy(float x, float y)
+	{
+		rectangle.position.x += x;
+		rectangle.position.y += y;
+	}
+	
 	protected void moveBy(float x, float y, String type)
 	{
 		List<GameObject> possible = new ArrayList<GameObject>();
@@ -242,6 +248,15 @@ public class GameObject
 			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
+	}
+	
+	protected boolean collideWith(float x, float y, GameObject go)
+	{
+		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
+		
+		if(go.rectangle.collide(temp))
+			return true;
+		return false;
 	}
 	
 	protected GameObject collideList(float x, float y, List<GameObject> objs)

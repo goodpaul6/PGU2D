@@ -6,6 +6,8 @@ import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
 import com.ngsarmy.pgu.core.GameRasterizer;
+import com.ngsarmy.pgu.graphicutils.Animation;
+import com.ngsarmy.pgu.graphicutils.Animator;
 import com.ngsarmy.pgu.input.GameKeyboard;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -13,18 +15,21 @@ public class Test extends GameObject
 {
 	private Vector2 velocity;
 	private boolean grounded = false;
+	private Animator anim;
 	
 	public Test()
 	{
 		super(new Vector2(100, 100), "test");
 		velocity = new Vector2();
-		
+		anim = new Animator();
+		anim.add("alphabet", new Animation(GameAssets.PGUFontText.getFontImage(), 8, 8, new int[]{0, 1, 20, 3, 10, 5, 6, 7}, 2));
 		name = "player";
-		setHitbox(GameAssets.PGULogoImage);
+		setHitbox(8, 8);
 	}
 	
 	public void update(double delta)
 	{
+		anim.update(delta);
 		if(GameKeyboard.isKeyDown(KeyEvent.VK_W))
 			velocity.y -= 20 * delta;
 		if(GameKeyboard.isKeyDown(KeyEvent.VK_S))
@@ -56,20 +61,27 @@ public class Test extends GameObject
 	@Override
 	public boolean moveCollideX(GameObject go)
 	{
-		if(go.getTop() < getBottom())
-			return false;
 		return true;
 	}
 	
 	@Override
 	public boolean moveCollideY(GameObject go)
 	{
-		if(go.getTop() < getBottom())
+		/*if(go.getTop() < getBottom())
 			return false;
 		else if(go.getTop() + velocity.y > getBottom())
 		{
 			velocity.y = 0;
 			grounded = true;
+		}*/
+		if(go.getTop() + velocity.y > getBottom())
+		{
+			velocity.y = 0;
+			grounded = true;
+		}
+		else if(go.getBottom() - Math.abs(velocity.y) < getTop())
+		{
+			velocity.y = 0;
 		}
 		return true;
 	}
@@ -83,6 +95,6 @@ public class Test extends GameObject
 	public void render(GameRasterizer g)
 	{
 		g.setColor(0xffffff);
-		g.renderImage(GameAssets.PGULogoImage, (int)getLeft(), (int)getTop());
+		g.renderAnimator(anim, (int)getLeft(), (int)getTop());
 	}
 }
