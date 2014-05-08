@@ -1,7 +1,10 @@
 package com.ngsarmy.pgu.entity;
 
+import java.awt.event.KeyEvent;
+
 import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
+import com.ngsarmy.pgu.core.GameEventType;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -29,6 +32,8 @@ public class Blocker extends GameObject
 	
 	public void event(GameEvent ev)
 	{
+		if(ev.type == GameEventType.E_KEY_PRESSED && ev.key == KeyEvent.VK_Q)
+			setCollidable(!getCollidable());
 	}
 	
 	public void render(GameRasterizer g)

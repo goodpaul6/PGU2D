@@ -62,12 +62,17 @@ public class Test extends GameObject
 	@Override
 	public boolean moveCollideX(GameObject go)
 	{
+		if(go.rectangle.contains(rectangle))
+			return false;
+		
 		return true;
 	}
 	
 	@Override
 	public boolean moveCollideY(GameObject go)
 	{
+		if(go.rectangle.contains(rectangle))
+			return false;
 		/*if(go.getTop() < getBottom())
 			return false;
 		else if(go.getTop() + velocity.y > getBottom())

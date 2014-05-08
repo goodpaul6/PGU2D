@@ -12,7 +12,7 @@ import com.ngsarmy.pgu.utils.Vector2;
 
 public class GameObject 
 {
-	private final int GAMEOBJECT_COLLISION_SAMPLE_FACTOR = 5;
+	private final int GAMEOBJECT_COLLISION_SAMPLE_FACTOR = 20;
 	public GameState state;
 	public Rectangle rectangle;
 	public String name;

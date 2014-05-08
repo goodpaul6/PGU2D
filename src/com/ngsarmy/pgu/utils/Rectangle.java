@@ -48,4 +48,12 @@ public class Rectangle
 	{
 		return contains(point.x, point.y);
 	}
+	
+	public boolean contains(Rectangle rect)
+	{
+		if(rect.position.x > position.x && rect.position.y > position.y &&
+				rect.position.x + rect.size.x < position.x + size.x && rect.position.y + rect.size.y < position.y + size.y)
+			return true;
+		return false;
+	}
 }
