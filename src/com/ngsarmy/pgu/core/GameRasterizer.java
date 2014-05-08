@@ -28,6 +28,11 @@ public class GameRasterizer
 	// current color
 	private int color;
 	
+	// x render offset
+	public int xOffset = 0;
+	// y render offset
+	public int yOffset = 0;
+	
 	public GameRasterizer(int _width, int _height)
 	{
 		width = _width;
@@ -70,20 +75,20 @@ public class GameRasterizer
 	
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h)
 	{
-		if(_x + _w < 0) return;
-		if(_y + _h < 0) return;
-		if(_x >= width) return;
-		if(_y >= height) return;
+		if(_x + _w < xOffset) return;
+		if(_y + _h < yOffset) return;
+		if(_x >= xOffset + width) return;
+		if(_y >= yOffset + height) return;
 		
 		renderBuffer(img.getData(), _sx, _sy, _x, _y, _w, _h, img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
 	}
 	
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h, double angle)
 	{
-		if(_x + _w < 0) return;
-		if(_y + _h < 0) return;
-		if(_x >= width) return;
-		if(_y >= height) return;
+		if(_x + _w < xOffset) return;
+		if(_y + _h < yOffset) return;
+		if(_x >= xOffset + width) return;
+		if(_y >= yOffset + height) return;
 		
 		if(lastAngle == angle && GameInstances.isBufferAvailable("renderSubImage"))
 		{
@@ -121,6 +126,11 @@ public class GameRasterizer
 	
 	public void renderImage(GameImage img, int _x, int _y, double angle)
 	{	
+		if(_x + img.getWidth() < xOffset) return;
+		if(_y + img.getHeight() < yOffset) return;
+		if(_x >= xOffset + width) return;
+		if(_y >= yOffset + height) return;
+		
 		if(lastAngle == angle && GameInstances.isBufferAvailable("renderImage"))
 		{
 			double sin = Math.abs(Math.sin(angle));
@@ -204,10 +214,10 @@ public class GameRasterizer
 	// of the current color
 	public void renderFilledRectangle(int _x, int _y, int _w, int _h)
 	{
-		if (_x + _w < 0) return;
-		if (_y + _h < 0) return;
-		if (_x > width) return;
-		if (_y > height) return;
+		if (_x + _w < xOffset) return;
+		if (_y + _h < yOffset) return;
+		if (_x > xOffset + width) return;
+		if (_y > yOffset + height) return;
 		int[] data = GameInstances.allocateBufferIf("renderFilledRectangle", _w, _h);
 		Arrays.fill(data, 0xffffff);
 		renderBuffer(data, 0, 0, _x, _y, _w, _h, 255, new GameColor(-1, -1, -1), _w, _h, 0);
@@ -229,21 +239,21 @@ public class GameRasterizer
 	// and this function allows you to blit them onto the screen at a specific location easily and with blending
 	public void renderBuffer(int[] _pixels, int ox, int oy, int _x, int _y, int w, int h, int alpha, GameColor mask, int scanWidth, int scanHeight, double angle)
 	{
-		if(_x + w < 0) return;
-		if(_y + h < 0) return;
-		if(_x > width) return;
-		if(_y > height) return;
-
+		int sX = _x;
+		int sY = _y;
+		int tX = _x - xOffset;
+		int tY = _y - yOffset;
+		
 		for(int y = 0; y < h; y++)
 		{
 			if(y + oy >= scanHeight) break;
-			int rY = _y + y;
+			int rY = tY + y;
 			if(rY >= height || rY < 0) continue;
 			
 			for(int x = 0; x < w; x++)
 			{
 				if(x + ox >= scanWidth) break;
-				int rX = _x + x;
+				int rX = tX + x;
 				if(rX >= width || rX < 0) continue;
 				
 				int col = _pixels[(x + ox) + (y + oy) * scanWidth];

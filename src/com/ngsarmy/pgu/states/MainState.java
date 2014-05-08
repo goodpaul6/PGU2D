@@ -9,18 +9,18 @@ import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
 import com.ngsarmy.pgu.entity.Blocker;
 import com.ngsarmy.pgu.entity.GameObject;
-import com.ngsarmy.pgu.entity.Test;
+import com.ngsarmy.pgu.entity.Player;
 import com.ngsarmy.pgu.utils.Vector2;
 
-public class LogoState extends GameState
+public class MainState extends GameState
 {
 	private GameObject e;
 	
-	public LogoState(Game _game)
+	public MainState(Game _game)
 	{
 		super(_game);
 
-		e = new Test();
+		e = new Player();
 		add(e);
 
 		for(int i = 0; i < 20; i++)

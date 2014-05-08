@@ -2,6 +2,7 @@ package com.ngsarmy.pgu.entity;
 
 import java.awt.event.KeyEvent;
 
+import com.ngsarmy.pgu.core.Game;
 import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
@@ -11,13 +12,13 @@ import com.ngsarmy.pgu.graphicutils.Animator;
 import com.ngsarmy.pgu.input.GameKeyboard;
 import com.ngsarmy.pgu.utils.Vector2;
 
-public class Test extends GameObject
+public class Player extends GameObject
 {
 	private Vector2 velocity;
 	private boolean grounded = false;
 	private Animator anim;
 	
-	public Test()
+	public Player()
 	{
 		super(new Vector2(100, 100), "test");
 		velocity = new Vector2();
@@ -101,6 +102,8 @@ public class Test extends GameObject
 	public void render(GameRasterizer g)
 	{
 		g.setColor(0xffffff);
+		g.xOffset = (int)getLeft() - Game.width / 2;
+		g.yOffset = (int)getTop() - Game.height / 2;
 		g.renderAnimator(anim, (int)getLeft(), (int)getTop());
 	}
 }

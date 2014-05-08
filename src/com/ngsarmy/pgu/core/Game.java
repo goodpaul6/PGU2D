@@ -2,7 +2,7 @@ package com.ngsarmy.pgu.core;
 
 import javax.swing.JFrame;
 
-import com.ngsarmy.pgu.states.LogoState;
+import com.ngsarmy.pgu.states.MainState;
 import com.ngsarmy.pgu.utils.GameConsts;
 import com.ngsarmy.pgu.utils.GameTimer;
 
@@ -11,6 +11,7 @@ public class Game implements Runnable
 	public static int width = 480;
 	public static int height = 240;
 	public static int scale = 1;
+	public static String log = "";
 	
 	private GameCanvas canvas;
 	
@@ -23,6 +24,11 @@ public class Game implements Runnable
 	private Thread thread;
 	private boolean running = false;
 
+	public static void log(String message)
+	{
+		log = message;
+	}
+	
 	public Game()
 	{
 		canvas = new GameCanvas(width, height, scale);
@@ -79,7 +85,7 @@ public class Game implements Runnable
 			frames++;
 			if((System.currentTimeMillis() - timer) / 1000.0 >= 1)
 			{
-				System.out.println("FPS: " + frames + " UPS: " + ups);
+				System.out.println("FPS: " + frames + " UPS: " + ups + " LOG: " + log);
 				frames = 0;
 				ups = 0;
 				timer = System.currentTimeMillis();
@@ -110,10 +116,10 @@ public class Game implements Runnable
 	{
 		Game.width = 640;
 		Game.height = 480;
-		Game.scale = 2;
+		Game.scale = 1;
 		GameAssets.load();
 		Game game = new Game();
-		game.states.pushState(new LogoState(game));
+		game.states.pushState(new MainState(game));
 		game.start();
 	}
 }
