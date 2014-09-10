@@ -5,6 +5,20 @@ import com.ngsarmy.pgu.core.GameColor;
 public class GameUtils 
 {
 	// USAGE:
+	// if value is lower than min, will return min
+	// if value is higher than max, will return max
+	// essentially prevents the value from exceeding given boundaries
+	public static float clamp(float value, float min, float max)
+	{
+		if(value < min)
+			return min;
+		else if(value > max)
+			return max;
+		else
+			return value;
+	}
+	
+	// USAGE:
 	// encodes color within integer value
 	public static int mapRgb(int Red, int Green, int Blue)
 	{

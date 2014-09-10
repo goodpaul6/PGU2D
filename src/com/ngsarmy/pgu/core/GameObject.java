@@ -8,7 +8,7 @@ import com.ngsarmy.pgu.utils.Vector2;
 
 public class GameObject 
 {
-	private final int GAMEOBJECT_COLLISION_SAMPLE_FACTOR = 20;
+	public int collisionSamples = 1;
 	public GameState state;
 	public Rectangle rectangle;
 	public String name;
@@ -139,55 +139,75 @@ public class GameObject
 		rectangle.position.y = v;
 	}
 	
-	protected void moveBy(float x, float y)
+	public void moveBy(float x, float y)
 	{
 		rectangle.position.x += x;
 		rectangle.position.y += y;
 	}
 	
-	protected void moveBy(float x, float y, String type)
+	private void sampledMove(float x, float y, List<GameObject> possible)
 	{
-		List<GameObject> possible = new ArrayList<GameObject>();
-		state.getCollidableWithType(type, possible);
+		float xAmt = x / collisionSamples;
+		float yAmt = y / collisionSamples;
 		
-		for(int i = 0; i < GAMEOBJECT_COLLISION_SAMPLE_FACTOR; i++)
+		for(int i = 0; i < collisionSamples; i++)
 		{
-			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
-			
-			GameObject go = collideList(rectangle.position.x + x / divisor, rectangle.position.y, possible);
+			GameObject go = collideList(rectangle.position.x + xAmt, rectangle.position.y, possible);
 			
 			if(go != null)
 			{
 				if(moveCollideX(go)) break;
-				else rectangle.position.x += x / divisor;
+				else rectangle.position.x += xAmt;
 			}
 			else
-				rectangle.position.x += x / divisor;
+				rectangle.position.x += xAmt;
 		}
 		
-		for(int i = 0; i < GAMEOBJECT_COLLISION_SAMPLE_FACTOR; i++)
-		{
-			int divisor = GAMEOBJECT_COLLISION_SAMPLE_FACTOR - i;
-			
-			GameObject go = collideList(rectangle.position.x, rectangle.position.y + y / divisor, possible);
+		for(int i = 0; i < collisionSamples; i++)
+		{	
+			GameObject go = collideList(rectangle.position.x, rectangle.position.y + yAmt, possible);
 			
 			if(go != null)
 			{
 				if(moveCollideY(go)) break;
-				else rectangle.position.y += y / divisor;
+				else rectangle.position.y += yAmt;
 			}
 			else
-				rectangle.position.y += y / divisor;
+				rectangle.position.y += yAmt;
 		}
 	}
 	
-	protected void moveTo(float x, float y)
+	public void moveBy(float x, float y, String type)
+	{
+		List<GameObject> possible = new ArrayList<GameObject>();
+		state.getCollidableWithType(type, possible);
+		
+		sampledMove(x, y, possible);
+	}
+	
+	public void moveBy(float x, float y, String[] types)
+	{	
+		if(types.length > 0)
+		{
+			List<GameObject> possible = new ArrayList<GameObject>();
+			
+			for(int i = 0; i < types.length; i++)
+				state.getCollidableWithType(types[i], possible);	
+			
+			sampledMove(x, y, possible);
+		}
+		else
+			moveBy(x, y);
+			
+	}
+	
+	public void moveTo(float x, float y)
 	{
 		rectangle.position.x = x;
 		rectangle.position.y = y;
 	}
 	
-	protected void moveTo(float x, float y, String type)
+	public void moveTo(float x, float y, String type)
 	{
 		float xDiff = x - rectangle.position.x;
 		float yDiff = y - rectangle.position.y;
@@ -213,7 +233,7 @@ public class GameObject
 	{
 	}
 
-	protected GameObject collide(float x, float y, String type)
+	public GameObject collide(float x, float y, String type)
 	{
 		List<GameObject> objs = new ArrayList<GameObject>();
 		state.getCollidableWithType(type, objs);
@@ -231,7 +251,7 @@ public class GameObject
 		return null;
 	}
 	
-	protected GameObject collideTypes(float x, float y, String[] types)
+	public GameObject collideTypes(float x, float y, String[] types)
 	{
 		List<GameObject> objs = new ArrayList<GameObject>();
 		for(int i = 0; i < types.length; i++)
@@ -249,7 +269,7 @@ public class GameObject
 		return null;
 	}
 	
-	protected void collideInto(float x, float y, String type, List<GameObject> objs)
+	public void collideInto(float x, float y, String type, List<GameObject> objs)
 	{
 		List<GameObject> possible = new ArrayList<GameObject>();
 		state.getCollidableWithType(type, possible);
@@ -265,7 +285,7 @@ public class GameObject
 		}
 	}
 	
-	protected void collideTypesInto(float x, float y, String[] types, List<GameObject> objs)
+	public void collideTypesInto(float x, float y, String[] types, List<GameObject> objs)
 	{
 		List<GameObject> possible = new ArrayList<GameObject>();
 		for(int i = 0; i < types.length; i++)
@@ -282,7 +302,7 @@ public class GameObject
 		}
 	}
 	
-	protected boolean collideWith(float x, float y, GameObject go)
+	public boolean collideWith(float x, float y, GameObject go)
 	{
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
@@ -291,7 +311,7 @@ public class GameObject
 		return false;
 	}
 	
-	protected GameObject collideList(float x, float y, List<GameObject> objs)
+	public GameObject collideList(float x, float y, List<GameObject> objs)
 	{
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 

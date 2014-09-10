@@ -8,6 +8,8 @@ package com.ngsarmy.pgu.core;
 public enum GameEventType 
 {
 	E_KEY_PRESSED,
+	E_KEY_REPEAT,
+	E_KEY_TYPED,
 	E_KEY_RELEASED,
 	E_MOUSE_BUTTON_PRESSED,
 	E_MOUSE_BUTTON_RELEASED,

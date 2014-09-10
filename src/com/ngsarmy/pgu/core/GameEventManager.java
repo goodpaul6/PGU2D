@@ -62,7 +62,25 @@ public class GameEventManager
 		ev.type = GameEventType.E_KEY_PRESSED;
 		eventQueue.push(ev);
 	}
-
+	
+	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY
+	public static void pushKeyRepeatEvent(int key)
+	{
+		GameEvent ev = new GameEvent();
+		ev.key = key;
+		ev.type = GameEventType.E_KEY_REPEAT;
+		eventQueue.push(ev);
+	}
+	
+	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY
+	public static void pushKeyTypedEvent(int key)
+	{
+		GameEvent ev = new GameEvent();
+		ev.key = key;
+		ev.type = GameEventType.E_KEY_TYPED;
+		eventQueue.push(ev);
+	}
+	
 	// CAUTION: COULD BE USED DIRECTLY, BUT IS ALSO CALLED INTERNALLY
 	public static void pushKeyUpEvent(int key)
 	{

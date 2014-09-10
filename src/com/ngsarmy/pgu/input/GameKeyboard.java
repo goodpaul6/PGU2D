@@ -14,9 +14,13 @@ public class GameKeyboard implements KeyListener
 	public void keyPressed(KeyEvent e) 
 	{
 		int kcode = e.getKeyCode();	
+		if(!keys[kcode])
+			GameEventManager.pushKeyDownEvent(kcode);
+		else
+			GameEventManager.pushKeyRepeatEvent(kcode);
+		
 		if(kcode < keys.length)
 			keys[e.getKeyCode()] = true;
-		GameEventManager.pushKeyDownEvent(kcode);
 	}
 
 	// CAUTION: Internal function
@@ -36,7 +40,7 @@ public class GameKeyboard implements KeyListener
 		int kcode = e.getKeyCode();
 		if(kcode < keys.length)
 			keys[e.getKeyCode()] = true;
-		GameEventManager.pushKeyDownEvent(kcode);
+		GameEventManager.pushKeyTypedEvent(e.getKeyCode());
 	}
 	
 	// USAGE:

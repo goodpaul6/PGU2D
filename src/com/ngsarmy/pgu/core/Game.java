@@ -8,10 +8,11 @@ import com.ngsarmy.pgu.utils.GameTimer;
 
 public class Game implements Runnable
 {
-	public static int width = 640;
-	public static int height = 480;
-	public static int scale = 1;
+	public static int width = 480;
+	public static int height = 240;
+	public static int scale = 2;
 	public static String log = "";
+	public static float delta = (float)(1 / GameConsts.NPF);
 	
 	private GameCanvas canvas;
 	
