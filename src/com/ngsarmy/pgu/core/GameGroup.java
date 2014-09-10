@@ -1,12 +1,7 @@
-package com.ngsarmy.pgu.entity;
+package com.ngsarmy.pgu.core;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.ngsarmy.pgu.core.GameEvent;
-import com.ngsarmy.pgu.core.GameRasterizer;
-import com.ngsarmy.pgu.core.GameState;
-import com.ngsarmy.pgu.core.GameText;
 
 // GameObjectManager class:
 // This class is a parent class
@@ -14,7 +9,7 @@ import com.ngsarmy.pgu.core.GameText;
 // utilities for managing game 
 // objects, such as rendering,
 // finding, and deleting them
-public class GameObjectManager 
+public class GameGroup 
 {
 	public static final int MAX_LAYER = 5;
 	private GameText debugText;
@@ -44,7 +39,7 @@ public class GameObjectManager
 	private List<PendingChange> objectChangeList = new ArrayList<PendingChange>();
 	private List<PendingChange> collidableChangeList = new ArrayList<PendingChange>();
 	
-	public GameObjectManager()
+	public GameGroup()
 	{
 		objectList = new ArrayList<GameObject>();
 		debugText = new GameText();
@@ -53,7 +48,7 @@ public class GameObjectManager
 			System.exit(-1);
 	}
 	
-	public void event(GameEvent ev)
+	public void eventGroup(GameEvent ev)
 	{
 		for(int i = 0; i < objectList.size(); i++)
 			objectList.get(i).event(ev);
@@ -62,7 +57,7 @@ public class GameObjectManager
 		applyCollidablePendingChanges();
 	}
 	
-	public void update(double delta)
+	public void updateGroup(float delta)
 	{
 		for(int i = 0; i < objectList.size(); i++)
 			objectList.get(i).update(delta);
@@ -71,7 +66,7 @@ public class GameObjectManager
 		applyCollidablePendingChanges();
 	}
 	
-	public void render(GameRasterizer g)
+	public void renderGroup(GameRasterizer g)
 	{
 		for(int l = 0; l <= MAX_LAYER; l++)
 		{	

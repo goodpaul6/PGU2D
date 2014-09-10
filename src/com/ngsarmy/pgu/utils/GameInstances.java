@@ -1,5 +1,7 @@
 package com.ngsarmy.pgu.utils;
 
+import java.util.HashMap;
+
 // GameInstances class:
 // This class holds commonly used
 // data structures such as a Vector2
@@ -8,67 +10,55 @@ package com.ngsarmy.pgu.utils;
 // unnecessarily
 public class GameInstances 
 {
-	// global vec2 instance
-	public static Vector2 vec2 = new Vector2();
-	// global pixel buffer instance (initially 512x512)
-	// usage:
-	// for buffering rotation data
-	private static int[] buffer = new int[256 * 256];
-	// is the buffer in use right now? because if it is, throw exception if someone allocates it/gets it again
-	private static boolean bufferInUse = false;
-	// current width of the buffer 
-	private static int bufferWidth = 256;
-	// current height of the buffer
-	private static int bufferHeight = 256;
-	// current user of buffer
-	private static String currentUser = "default";
+	// global pixel buffer hash
+	// USAGE:
+	// for buffering misc. integer data (usually pixels)
+	// could be music data, file data, etc
+	// use the provided methods to use this
+	private static HashMap<String, int[]> buffers = new HashMap<String, int[]>();
+	
+	// default buffer owner
+	// used by allocateGeneralBuffer to allocate a buffer
+	// which is ownership agnostic - this is the id for a 
+	// general buffer which could have been used by anyone
+	// at any point.
+	private static final String DEFAULT_BUFFER_OWNER = "_default_buffer_owner_";
 	
 	// USAGE:
-	// resizes the buffer if necessary to accomodate new data
-	// and then returns it
-	public static int[] allocateBuffer(int nw, int nh, String userName)
+	// use this function to allocate a buffer which you wish to maintain
+	// or prevent write access to by certain functions. I.e you wish to have
+	// a buffer for level data and you dont' want it to be written over
+	// unless the level class writes over it, you simply allocate the buffer
+	// passing a unique id such as "level data" in, followed by the length
+	// and receive a new buffer if no previously allocated one existed, 
+	// or an old one (reallocated if the length required was larger than
+	// was previously accommodated)
+	public static int[] allocateOwnedBuffer(String owner, int len)
 	{
-		if(bufferInUse && !currentUser.equals(userName))
+		if(buffers.containsKey(owner))
 		{
-			System.out.println("ERROR: Attempted to allocate/access game instance buffer when it was already in use!");
-			System.exit(-1);
+			int[] prevBuf = buffers.get(owner);
+			if(prevBuf.length >= len)
+				return prevBuf;
+			else
+			{
+				int[] extBuf = new int[len];
+				buffers.put(owner, extBuf);
+				return extBuf;
+			}
 		}
 		
-		currentUser = userName;
-		
-		if(bufferWidth * bufferHeight < nw * nh)
-		{
-			buffer = new int[nw * nh];
-			bufferWidth = nw;
-			bufferHeight = nh;
-		}
-		
-		bufferInUse = true;
-		return buffer;
+		int[] buf = new int[len];
+		buffers.put(owner, buf);
+		return buf;
 	}
 	
 	// USAGE:
-	// call this when you no longer need the buffer (i.e you don't want to own it anymore)
-	// it will only free ownership if the correct user tells it to
-	public static void freeBufferOwnership(String userName)
+	// use this to allocate a buffer for general use
+	// for example, just to buffer some data for image
+	// rotation or other such expensive procedures
+	public static int[] allocateGeneralBuffer(int len)
 	{
-		if(currentUser.equals(userName))
-			bufferInUse = false;
-	}
-	
-	// USAGE:
-	// call this when you want to check if the buffer is available for use
-	// it will be available to the user if the userName matches the current
-	// user
-	public static boolean isBufferAvailable(String userName)
-	{
-		return (!bufferInUse || userName.equals(currentUser));
-	}
-	
-	// USAGE:
-	// allocate a buffer if it is available, but if it isnt, allocate a normal buffer
-	public static int[] allocateBufferIf(String userName, int nw, int nh)
-	{
-		return (isBufferAvailable(userName) ? allocateBuffer(nw, nh, userName) : new int[nw * nh]);
+		return allocateOwnedBuffer(DEFAULT_BUFFER_OWNER, len);
 	}
 }

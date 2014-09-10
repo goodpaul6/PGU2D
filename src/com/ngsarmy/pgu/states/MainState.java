@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 import com.ngsarmy.pgu.core.Game;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
+import com.ngsarmy.pgu.core.GameObject;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.core.GameState;
 import com.ngsarmy.pgu.entity.Blocker;
-import com.ngsarmy.pgu.entity.GameObject;
 import com.ngsarmy.pgu.entity.Player;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -25,8 +25,8 @@ public class MainState extends GameState
 
 		for(int i = 0; i < 20; i++)
 		{	
-			add(new Blocker(new Vector2(32 * i % Game.width, 200 + i * 5)));
-			add(new Blocker(new Vector2(32 * i % Game.width, 400 + i * 5)));
+			add(new Blocker(new Vector2(32 * i, 200 + i * 5)));
+			add(new Blocker(new Vector2(32 * i, 400 + i * 5)));
 		}
 	}
 
@@ -45,15 +45,17 @@ public class MainState extends GameState
 	{
 	}
 	
-	public void update(double delta)
+	public boolean update(float delta)
 	{
 		super.update(delta);
+		return false;
 	}
 	
-	public void render(GameRasterizer g)
+	public boolean render(GameRasterizer g)
 	{
 		g.clearToColor(0x222333);
 		super.render(g);
+		return false;
 	}
 	
 	public void unload()

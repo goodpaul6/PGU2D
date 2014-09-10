@@ -50,6 +50,8 @@ public class Animation
 		curFrameOffset = new Vector2(0, 0);
 	}
 	
+	// CAUTION: Internal function
+	// do not call unless working directly on animation data
 	public void update(float delta)
 	{
 		accum += (float)delta;
@@ -65,21 +67,31 @@ public class Animation
 		curFrameOffset.y = tv * height;
 	}
 	
+	// USAGE:
+	// returns the width of an animation frame
 	public int getWidth()
 	{
 		return width;
 	}
 	
+	// USAGE:
+	// returns the height of the animation frame
 	public int getHeight()
 	{
 		return height;
 	}
 	
+	// USAGE:
+	// get the offest of the current frame as an
+	// x,y coordinate relative to the top-left 
+	// part of the image
 	public Vector2 getOffset()
 	{
 		return curFrameOffset;
 	}
 	
+	// USAGE:
+	// returns the internal image object contained within this animation
 	public GameImage getImage()
 	{
 		return image;

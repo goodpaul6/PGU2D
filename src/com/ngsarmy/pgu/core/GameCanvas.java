@@ -48,34 +48,17 @@ public class GameCanvas extends Canvas
 		// retrieve writable raster
 		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		// create the rasterizer
-		rst = new GameRasterizer(width, height);
+		rst = new GameRasterizer(width, height, pixels);
 	}
 	
 	public GameCanvas(int _width, int _height)
 	{
-		width = _width; 
-		height = _height;
-		scale = 2;			// default scale when none is provided
-
-		setPreferredSize(new Dimension(width * scale, height * scale));
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		// retrieve writable raster
-		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-		// create the rasterizer
-		rst = new GameRasterizer(width, height);
+		this(_width, _height, 2);
 	}
 	
 	public GameCanvas(int _scale)
 	{
-		width = 320;		// default width when none is provided
-		height = 240;		// default height when none is provided
-		
-		setPreferredSize(new Dimension(width * scale, height * scale));
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		// retrieve writable raster
-		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-		// create the rasterizer
-		rst = new GameRasterizer(width, height);
+		this(320, 240, _scale);
 	}
 	
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
@@ -95,15 +78,6 @@ public class GameCanvas extends Canvas
 		{
 			createBufferStrategy(3);
 			return;
-		}
-		
-		try 
-		{
-			rst.getRaster(pixels);
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
 		}
 		
 		Graphics g = bs.getDrawGraphics();

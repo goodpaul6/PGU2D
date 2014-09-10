@@ -19,9 +19,6 @@ public class GameRasterizer
 	private int width;
 	private int height;
 	
-	// last angle passed in as an arugment to rotated render method
-	private double lastAngle = 0;
-	
 	// publicly accessible pixel array
 	public int[] pixels;
 	
@@ -33,30 +30,41 @@ public class GameRasterizer
 	// y render offset
 	public int yOffset = 0;
 	
-	public GameRasterizer(int _width, int _height)
+	public GameRasterizer(int _width, int _height, int[] _pixels)
 	{
 		width = _width;
 		height = _height;
 		
-		pixels = new int[width * height];
+		pixels = _pixels;
 		color = 0;
 	}
 	
+	// USAGE:
+	// set the color used to render primitives (rect, line)
+	// this is also the screen clear color
 	public void setColor(int _color)
 	{
 		color = _color;
 	}
 	
+	// USAGE:
+	// clear the screen
 	public void clear()
 	{
 		clearToColor(color);
 	}
 	
+	// USAGE:
+	// clear the screen to the color passed in
 	public void clearToColor(int _color)
 	{
 		Arrays.fill(pixels, _color);
 	}
 	
+	// USAGE:
+	// pass in a text object as well as x and y position
+	// and this will render a text object onto the screen
+	// in the location provided
 	public void renderText(GameText text, int _x, int _y)
 	{
 		GameImage img = text.getFontImage();
@@ -73,6 +81,9 @@ public class GameRasterizer
 		}
 	}
 	
+	// USAGE:
+	// see the other overload of renderSubImage
+	// omits rotation for faster render
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h)
 	{
 		if(_x + _w < xOffset) return;
@@ -83,6 +94,13 @@ public class GameRasterizer
 		renderBuffer(img.getData(), _sx, _sy, _x, _y, _w, _h, img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
 	}
 	
+	// USAGE:
+	// although this is often called internally through animators and such,
+	// you can use this by passing in an image, as well as the position
+	// where you wish to render the image, followed by the position
+	// WITHIN the image from which you want it to paste the data.
+	// w and h are the width and height of this region
+	// following that, is the angle parameter, which you can use to rotate the data
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h, double angle)
 	{
 		if(_x + _w < xOffset) return;
@@ -90,40 +108,34 @@ public class GameRasterizer
 		if(_x >= xOffset + width) return;
 		if(_y >= yOffset + height) return;
 		
-		if(lastAngle == angle && GameInstances.isBufferAvailable("renderSubImage"))
-		{
-			double sin = Math.abs(Math.sin(angle));
-			double cos = Math.abs(Math.cos(angle));
-			int nw = (int)Math.floor(cos * _w + sin * _h);
-			int nh = (int)Math.floor(sin * _w + cos * _h);
-			int[] data = GameInstances.allocateBufferIf("renderSubImage", nw, nh);
-			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
-		}
+		angle = ((int)angle % 360);
 		
 		if(angle != 0 && angle != 360)
 		{
-			lastAngle = angle;
 			double sin = Math.abs(Math.sin(angle));
 			double cos = Math.abs(Math.cos(angle));
 			int nw, nh;
 			int w = _w, h = _h;
 			nw = (int)Math.floor(cos * w + sin * h);
 			nh = (int)Math.floor(sin * w + cos * h);
-			int[] data = GameInstances.allocateBufferIf("renderSubImage", nw, nh);
+			int[] data = GameInstances.allocateGeneralBuffer(nw * nh);
 			
 			GameImage.rotateNearestNeigbour(angle, img.getRegionData(_sx, _sy, _w, _h), _w, _h, data, nw, nh);
 			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
-			GameInstances.freeBufferOwnership("renderSubImage");
 		}
 		else
 			renderBuffer(img.getData(), _sx, _sy, _x, _y, _w, _h, img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
 	}
 	
+	// USAGE:
+	// render an image to a location
 	public void renderImage(GameImage img, int _x, int _y)
 	{	
 		renderBuffer(img.getData(), 0, 0, _x, _y, img.getWidth(), img.getHeight(), img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
 	}
 	
+	// USAGE:
+	// render an image to a location with the specified rotation
 	public void renderImage(GameImage img, int _x, int _y, double angle)
 	{	
 		if(_x + img.getWidth() < xOffset) return;
@@ -131,30 +143,20 @@ public class GameRasterizer
 		if(_x >= xOffset + width) return;
 		if(_y >= yOffset + height) return;
 		
-		if(lastAngle == angle && GameInstances.isBufferAvailable("renderImage"))
-		{
-			double sin = Math.abs(Math.sin(angle));
-			double cos = Math.abs(Math.cos(angle));
-			int nw = (int)Math.floor(cos * img.getWidth() + sin * img.getHeight());
-			int nh = (int)Math.floor(sin * img.getWidth() + cos * img.getHeight());
-			int[] data = GameInstances.allocateBufferIf("renderImage", nw, nh);
-			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
-		}
+		angle = ((int)angle % 360);
 		
 		if(angle != 0 && angle != 360)
 		{
-			lastAngle = angle;
 			double sin = Math.abs(Math.sin(angle));
 			double cos = Math.abs(Math.cos(angle));
 			int nw, nh;
 			int w = img.getWidth(), h = img.getHeight();
 			nw = (int)Math.floor(cos * w + sin * h);
 			nh = (int)Math.floor(sin * w + cos * h);
-			int[] data = GameInstances.allocateBufferIf("renderImage", nw, nh);
+			int[] data = GameInstances.allocateGeneralBuffer(nw * nh);
 			
 			GameImage.rotateNearestNeigbour(angle, img.getData(), img.getWidth(), img.getHeight(), data, nw, nh);
 			renderBuffer(data, 0, 0, _x, _y, nw, nh, img.getAlpha(), GameUtils.mapHex(img.getMask()), nw, nh, angle);
-			GameInstances.freeBufferOwnership("renderImage");
 		}
 		else
 			renderImage(img, _x, _y);
@@ -162,18 +164,18 @@ public class GameRasterizer
 	
 	// USAGE:
 	// call every frame passing in an animator instance to render an animator onto the screen
-	// use other overload for rotation
 	public void renderAnimator(Animator animator, int _x, int _y)
 	{
 		Animation current = animator.getAnimation();
-		
 		renderSubImage(current.getImage(), _x, _y, (int)current.getOffset().x, (int)current.getOffset().y, current.getWidth(), current.getHeight());
 	}
 	
+	// USAGE:
+	// call every frame passing in an animator instance to render an animator onto the screen
+	// this overload allows rotation
 	public void renderAnimator(Animator animator, int _x, int _y, double angle)
 	{
 		Animation current = animator.getAnimation();
-		
 		renderSubImage(current.getImage(), _x, _y, (int)current.getOffset().x, (int)current.getOffset().y, current.getWidth(), current.getHeight(), angle);
 	}
 	
@@ -182,35 +184,44 @@ public class GameRasterizer
 	// of the current color
 	public void renderLineRectangle(int _x, int _y, int w, int h)
 	{
+		if (_x + w < xOffset) return;
+		if (_y + h < yOffset) return;
+		if (_x > xOffset + width) return;
+		if (_y > yOffset + height) return;
+		int[] data = GameInstances.allocateGeneralBuffer(w * h);
+		Arrays.fill(data, color - 1);
 		int rX = 0, rY = 0;
+		
 		for(int x = 0; x < w; x++) 
 		{
-			rX = _x + x;
-			rY = _y;
-			renderPixel(rX, rY, color);
+			rX = x;
+			rY = 0;
+			data[rX + rY * w] = color;
 		}
 		for(int y = 0; y < h; y++)
 		{
-			rX = _x;
-			rY = _y + y;
-			renderPixel(rX, rY, color);
+			rX = 0;
+			rY = y;
+			data[rX + rY * w] = color;
 		}
 		for(int x = 0; x < w; x++)
 		{
-			rX = _x + x;
-			rY = _y + h;
-			renderPixel(rX, rY, color);
+			rX = x;
+			rY = h - 1;
+			data[rX + rY * w] = color;
 		}
 		for(int y = 0; y < h; y++)
 		{
-			rX = _x + w;
-			rY = _y + y;
-			renderPixel(rX, rY, color);
+			rX = w - 1;
+			rY = y;
+			data[rX + rY * w] = color;
 		}
+		
+		renderBuffer(data, 0, 0, _x, _y, w, h, 255, GameUtils.mapHex(color - 1), w, h, 0);
 	}
 	
 	// USAGE:
-	// give x, y, w, and height value and it will render a filled rectangle with those dimensions
+	// give x, y, width, and height value and it will render a filled rectangle with those dimensions
 	// of the current color
 	public void renderFilledRectangle(int _x, int _y, int _w, int _h)
 	{
@@ -218,10 +229,9 @@ public class GameRasterizer
 		if (_y + _h < yOffset) return;
 		if (_x > xOffset + width) return;
 		if (_y > yOffset + height) return;
-		int[] data = GameInstances.allocateBufferIf("renderFilledRectangle", _w, _h);
+		int[] data = GameInstances.allocateGeneralBuffer(_w * _h);
 		Arrays.fill(data, 0xffffff);
 		renderBuffer(data, 0, 0, _x, _y, _w, _h, 255, new GameColor(-1, -1, -1), _w, _h, 0);
-		GameInstances.freeBufferOwnership("renderFilledRectangle");
 	}
 	
 	// USAGE:
@@ -239,8 +249,6 @@ public class GameRasterizer
 	// and this function allows you to blit them onto the screen at a specific location easily and with blending
 	public void renderBuffer(int[] _pixels, int ox, int oy, int _x, int _y, int w, int h, int alpha, GameColor mask, int scanWidth, int scanHeight, double angle)
 	{
-		int sX = _x;
-		int sY = _y;
 		int tX = _x - xOffset;
 		int tY = _y - yOffset;
 		
@@ -279,7 +287,9 @@ public class GameRasterizer
 		}
 	}
 	
-	
+	// USAGE:
+	// put as much of the screen data (or all of it)
+ 	// into the provided buffer
 	public void getRaster(int[] pix)
 	{
 		for(int i = 0; i < (int)Math.min(pix.length, pixels.length); i++)

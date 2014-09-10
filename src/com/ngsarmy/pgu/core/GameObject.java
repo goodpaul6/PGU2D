@@ -1,12 +1,8 @@
-package com.ngsarmy.pgu.entity;
+package com.ngsarmy.pgu.core;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ngsarmy.pgu.core.GameEvent;
-import com.ngsarmy.pgu.core.GameImage;
-import com.ngsarmy.pgu.core.GameRasterizer;
-import com.ngsarmy.pgu.core.GameState;
 import com.ngsarmy.pgu.utils.Rectangle;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -47,7 +43,7 @@ public class GameObject
 	{
 	}
 	
-	public void update(double delta)
+	public void update(float delta)
 	{
 	}
 	

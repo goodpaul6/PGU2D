@@ -8,8 +8,8 @@ import com.ngsarmy.pgu.utils.GameTimer;
 
 public class Game implements Runnable
 {
-	public static int width = 480;
-	public static int height = 240;
+	public static int width = 640;
+	public static int height = 480;
 	public static int scale = 1;
 	public static String log = "";
 	
@@ -78,7 +78,7 @@ public class Game implements Runnable
 			
 			while(deltaTime >= 1.0)
 			{
-				update(1 / GameConsts.FPS);
+				update((float)(1 / GameConsts.FPS));
 				deltaTime--;
 				ups++;
 			}
@@ -94,7 +94,7 @@ public class Game implements Runnable
 		}
 	}
 	
-	private void update(double delta)
+	private void update(float delta)
 	{
 		states.update(delta);
 	}
@@ -114,9 +114,6 @@ public class Game implements Runnable
 	
 	public static void main(String[] args)
 	{
-		Game.width = 640;
-		Game.height = 480;
-		Game.scale = 1;
 		GameAssets.load();
 		Game game = new Game();
 		game.states.pushState(new MainState(game));

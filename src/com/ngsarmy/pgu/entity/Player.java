@@ -6,6 +6,7 @@ import com.ngsarmy.pgu.core.Game;
 import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
+import com.ngsarmy.pgu.core.GameObject;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.graphicutils.Animation;
 import com.ngsarmy.pgu.graphicutils.Animator;
@@ -29,7 +30,7 @@ public class Player extends GameObject
 		setHitbox(8, 8);
 	}
 	
-	public void update(double delta)
+	public void update(float delta)
 	{
 		anim.update(delta);
 		if(GameKeyboard.isKeyDown(KeyEvent.VK_W))
@@ -63,33 +64,20 @@ public class Player extends GameObject
 	@Override
 	public boolean moveCollideX(GameObject go)
 	{
-		if(go.rectangle.contains(rectangle))
-			return false;
-		
 		return true;
 	}
 	
 	@Override
 	public boolean moveCollideY(GameObject go)
 	{
-		if(go.rectangle.contains(rectangle))
-			return false;
-		/*if(go.getTop() < getBottom())
-			return false;
-		else if(go.getTop() + velocity.y > getBottom())
-		{
-			velocity.y = 0;
-			grounded = true;
-		}*/
 		if(go.getTop() + velocity.y > getBottom())
 		{
 			velocity.y = 0;
 			grounded = true;
 		}
 		else if(go.getBottom() - Math.abs(velocity.y) < getTop())
-		{
 			velocity.y = 0;
-		}
+		
 		return true;
 	}
 	

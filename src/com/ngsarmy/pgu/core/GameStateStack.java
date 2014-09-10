@@ -50,10 +50,13 @@ public class GameStateStack
 	
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
 	// the game class calls this to update the current state
-	public void update(double delta)
+	public void update(float delta)
 	{
-		GameState state = gsList.peek();
-		state.update(delta);
+		for(int i = 0; i < gsList.size(); i++)
+		{
+			if(gsList.get(i).update(delta))
+				return;
+		}
 	}
 	
 	// CAUTION: NOT MEANT TO BE USED DIRECTLY
@@ -61,6 +64,9 @@ public class GameStateStack
 	public void render(GameRasterizer g)
 	{
 		for(int i = 0; i < gsList.size(); i++)
-			gsList.get(i).render(g);
+		{	
+			if(gsList.get(i).render(g))
+				return;
+		}
 	}
 }

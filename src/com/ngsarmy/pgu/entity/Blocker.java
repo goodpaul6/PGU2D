@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import com.ngsarmy.pgu.core.GameAssets;
 import com.ngsarmy.pgu.core.GameEvent;
 import com.ngsarmy.pgu.core.GameEventType;
+import com.ngsarmy.pgu.core.GameObject;
 import com.ngsarmy.pgu.core.GameRasterizer;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -26,7 +27,7 @@ public class Blocker extends GameObject
 		setHitbox(GameAssets.brickTile);
 	}
 	
-	public void update(double delta)
+	public void update(float delta)
 	{
 	}
 	

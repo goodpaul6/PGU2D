@@ -36,7 +36,7 @@ public class Animator
 	// animation (you must call play prior to this to set the current animation, other
 	// wise, no animation will be updated (all of this considering whether the animator
 	// is paused)
-	public void update(double delta)
+	public void update(float delta)
 	{
 		if(!paused && currentAnim != null)
 			currentAnim.update((float)delta);
