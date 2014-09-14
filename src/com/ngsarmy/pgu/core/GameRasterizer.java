@@ -4,10 +4,8 @@ import java.util.Arrays;
 
 import com.ngsarmy.pgu.graphicutils.Animation;
 import com.ngsarmy.pgu.graphicutils.Animator;
-import com.ngsarmy.pgu.input.GameMouse;
 import com.ngsarmy.pgu.utils.GameInstances;
 import com.ngsarmy.pgu.utils.GameUtils;
-import com.ngsarmy.pgu.utils.Vector2;
 
 /* GameRasterizer Class:
  * an internal class used by game canvas to

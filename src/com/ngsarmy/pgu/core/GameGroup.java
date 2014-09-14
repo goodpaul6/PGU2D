@@ -95,7 +95,7 @@ public class GameGroup
 				{	
 					if(Game.getViewRect().collide(go.rectangle))
 					{
-						g.currentGo = go;
+						GameRasterizer.currentGo = go;
 						go.render(g);
 					}
 				}
