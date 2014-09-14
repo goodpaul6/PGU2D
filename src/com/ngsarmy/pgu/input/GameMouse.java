@@ -6,6 +6,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import com.ngsarmy.pgu.core.Game;
 import com.ngsarmy.pgu.core.GameEventManager;
 
 /* GameMouse class:
@@ -23,10 +24,10 @@ public class GameMouse implements MouseListener, MouseMotionListener, MouseWheel
 	
 	// USAGE:
 	// gives the x position of the mouse relative to the canvas
-	public static int getX() { return x; }
+	public static int getX() { return (int)(x / (double)Game.scale); }
 	// USAGE:
 	// gives the y position of the mouse relative to the canvas
-	public static int getY() { return y; }
+	public static int getY() { return (int)(y / (double)Game.scale); }
 	// USAGE:
 	// gives the offset of the mouse wheel
 	public static int getWheel() { int w = wheel; wheel = 0; return w; }

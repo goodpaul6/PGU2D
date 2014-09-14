@@ -23,7 +23,6 @@ public class GameText
 
 	public GameText()
 	{
-		fontImage = new GameImage();
 	}
 	
 	// USAGE:
@@ -31,8 +30,7 @@ public class GameText
 	// character within the file
 	public boolean loadFont(String filePath, int charWidth, int charHeight)
 	{
-		if(!fontImage.loadFromFile(filePath))
-			return false;
+		fontImage = GameAssets.loadImage(filePath);
 		width = charWidth;
 		height = charHeight;
 		return true;

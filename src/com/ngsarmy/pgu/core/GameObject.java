@@ -10,11 +10,14 @@ public class GameObject
 {
 	public int collisionSamples = 1;
 	public GameState state;
+	public GameGroup parent;
 	public Rectangle rectangle;
 	public String name;
 	public String type;
 	public int layer;
-	private boolean collidable;
+	public boolean collidable;
+	
+	private ArrayList<GameObject> cachedObjectList;
 	
 	public GameObject(Vector2 position, String type)
 	{
@@ -23,20 +26,13 @@ public class GameObject
 		this.type = type;
 		layer = 0;
 		collidable = true;
+		parent = null;
+		cachedObjectList = new ArrayList<GameObject>();
 	}
 	
-	public void setCollidable(boolean tf)
+	public Vector2 getCenter()
 	{
-		if(!tf)
-			state.removeAsCollidable(this);
-		else
-			state.addAsCollidable(this);
-		collidable = tf;
-	}
-	
-	public boolean getCollidable()
-	{
-		return collidable;
+		return new Vector2(rectangle.position.x + rectangle.size.x / 2, rectangle.position.y + rectangle.size.y / 2);
 	}
 
 	public void event(GameEvent ev)
@@ -109,6 +105,26 @@ public class GameObject
 		return rectangle.position.x + rectangle.size.x;
 	}
 	
+	public int getLeftI()
+	{
+		return (int)rectangle.position.x;
+	}
+	
+	public int getTopI()
+	{
+		return (int)rectangle.position.y;
+	}
+	
+	public int getRightI()
+	{
+		return (int)(rectangle.position.x + rectangle.size.x);
+	}
+	
+	public int getBottomI()
+	{
+		return (int)(rectangle.position.y + rectangle.size.y);
+	}
+	
 	public float getWidth()
 	{
 		return rectangle.size.x;
@@ -117,6 +133,16 @@ public class GameObject
 	public float getHeight()
 	{
 		return rectangle.size.y;
+	}
+	
+	public int getWidthI()
+	{
+		return (int)rectangle.size.x;
+	}
+	
+	public int getHeightI()
+	{
+		return (int)rectangle.size.y;
 	}
 	
 	public void setRight(float v)
@@ -179,22 +205,26 @@ public class GameObject
 	
 	public void moveBy(float x, float y, String type)
 	{
-		List<GameObject> possible = new ArrayList<GameObject>();
-		state.getCollidableWithType(type, possible);
+		if(collidable)
+		{
+			cachedObjectList.clear();
+			state.getCollidableWithType(type, cachedObjectList);
 		
-		sampledMove(x, y, possible);
+			sampledMove(x, y, cachedObjectList);
+		}
+		else
+			moveBy(x, y);
 	}
 	
 	public void moveBy(float x, float y, String[] types)
 	{	
-		if(types.length > 0)
+		if(collidable && types.length > 0)
 		{
-			List<GameObject> possible = new ArrayList<GameObject>();
-			
+			cachedObjectList.clear();
 			for(int i = 0; i < types.length; i++)
-				state.getCollidableWithType(types[i], possible);	
+				state.getCollidableWithType(types[i], cachedObjectList);	
 			
-			sampledMove(x, y, possible);
+			sampledMove(x, y, cachedObjectList);
 		}
 		else
 			moveBy(x, y);
@@ -235,16 +265,16 @@ public class GameObject
 
 	public GameObject collide(float x, float y, String type)
 	{
-		List<GameObject> objs = new ArrayList<GameObject>();
-		state.getCollidableWithType(type, objs);
+		cachedObjectList.clear();
+		state.getCollidableWithType(type, cachedObjectList);
 		
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
-		for(int i = 0; i < objs.size(); i++)
+		for(int i = 0; i < cachedObjectList.size(); i++)
 		{
-			GameObject go = objs.get(i);
+			GameObject go = cachedObjectList.get(i);
 			
-			if(go != this && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		
@@ -253,17 +283,17 @@ public class GameObject
 	
 	public GameObject collideTypes(float x, float y, String[] types)
 	{
-		List<GameObject> objs = new ArrayList<GameObject>();
+		cachedObjectList.clear();
 		for(int i = 0; i < types.length; i++)
-			state.getCollidableWithType(types[i], objs);
+			state.getCollidableWithType(types[i], cachedObjectList);
 		
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
-		for(int i = 0; i < objs.size(); i++)
+		for(int i = 0; i < cachedObjectList.size(); i++)
 		{
-			GameObject go = objs.get(i);
+			GameObject go = cachedObjectList.get(i);
 			
-			if(go != this && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		return null;
@@ -271,33 +301,33 @@ public class GameObject
 	
 	public void collideInto(float x, float y, String type, List<GameObject> objs)
 	{
-		List<GameObject> possible = new ArrayList<GameObject>();
-		state.getCollidableWithType(type, possible);
+		cachedObjectList.clear();
+		state.getCollidableWithType(type, cachedObjectList);
 		
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
-		for(int i = 0; i < possible.size(); i++)
+		for(int i = 0; i < cachedObjectList.size(); i++)
 		{
-			GameObject go = possible.get(i);
+			GameObject go = cachedObjectList.get(i);
 			
-			if(go != this && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
 	
 	public void collideTypesInto(float x, float y, String[] types, List<GameObject> objs)
 	{
-		List<GameObject> possible = new ArrayList<GameObject>();
+		cachedObjectList.clear();
 		for(int i = 0; i < types.length; i++)
-			state.getCollidableWithType(types[i], possible);
+			state.getCollidableWithType(types[i], cachedObjectList);
 		
 		Rectangle temp = new Rectangle(x, y, rectangle.size.x, rectangle.size.y);
 		
-		for(int i = 0; i < possible.size(); i++)
+		for(int i = 0; i < cachedObjectList.size(); i++)
 		{
-			GameObject go = possible.get(i);
+			GameObject go = cachedObjectList.get(i);
 			
-			if(go != this && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				objs.add(go);
 		}
 	}
@@ -319,7 +349,7 @@ public class GameObject
 		{
 			GameObject go = objs.get(i);
 			
-			if(go != this && go.rectangle.collide(temp))
+			if(go != this && go.collidable && go.rectangle.collide(temp))
 				return go;
 		}
 		return null;

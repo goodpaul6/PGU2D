@@ -1,5 +1,6 @@
 package com.ngsarmy.pgu.core;
 
+
 import com.ngsarmy.pgu.utils.GameUtils;
 import com.ngsarmy.pgu.utils.Vector2;
 
@@ -28,6 +29,8 @@ public class GameObjectExt extends GameObject
 	public float angularAcceleration;
 	public float maxAngularVelocity;
 	
+	public float collisionExtend;
+	
 	private boolean lastTouchingLeft;
 	private boolean lastTouchingRight;
 	private boolean lastTouchingTop;
@@ -45,7 +48,6 @@ public class GameObjectExt extends GameObject
 	public boolean allowBottomCollision;
 	public boolean allowTopCollision;
 	
-	public float elasticity;
 	public float angle;
 	
 	public boolean immovable;
@@ -84,6 +86,8 @@ public class GameObjectExt extends GameObject
 		immovable = false;
 		
 		collisionTypes = new String[0];
+		
+		collisionExtend = 1;
 	}
 	
 	private void resetTouching()
@@ -107,6 +111,24 @@ public class GameObjectExt extends GameObject
 		velocity.y += y;
 	}
 	
+	public void moveBy(float x, float y)
+	{
+		if(!immovable)
+			super.moveBy(x, y);
+	}
+	
+	public void moveBy(float x, float y, String type)
+	{
+		if(!immovable)
+			super.moveBy(x, y, type);
+	}
+	
+	public void moveBy(float x, float y, String[] types)
+	{
+		if(!immovable)
+			super.moveBy(x, y, types);
+	}
+	
 	public void applyPhysics(float delta)
 	{
 		resetTouching();
@@ -126,25 +148,25 @@ public class GameObjectExt extends GameObject
 			velocity.x *= frictionFactor.x;
 			velocity.y *= frictionFactor.y;
 			
-			if(touchingBottom)
+			if(touchingBottom && lastTouchingBottom)
 			{	
 				if(velocity.y > 0)
 					velocity.y = 0;
 			}
 			
-			if(touchingLeft)
+			if(touchingLeft && lastTouchingLeft)
 			{
 				if(velocity.x < 0)
 					velocity.x = 0;
 			}
 			
-			if(touchingRight)
+			if(touchingRight && lastTouchingRight)
 			{
 				if(velocity.x > 0)
 					velocity.x = 0;
 			}
 			
-			if(touchingTop)
+			if(touchingTop && lastTouchingTop)
 			{
 				if(velocity.y < 0)
 					velocity.y = 0;
@@ -167,74 +189,46 @@ public class GameObjectExt extends GameObject
 	
 	public void justTouchedLeft(GameObject go)
 	{
+		justTouched(go);
 		if(!immovable)
 		{	
-			if(go instanceof GameObjectExt)
-			{
-				float avgVelX = (((GameObjectExt) go).velocity.x + velocity.x) / 2;
-				if(velocity.x < 0)
-					velocity.x += avgVelX * elasticity;
-			}
-			else
-			{
-				if(velocity.x < 0)
-					velocity.x = 0;
-			}
+			if(velocity.x < 0)
+				velocity.x = 0;
 		}
 	}
 	
 	public void justTouchedRight(GameObject go)
 	{	
+		justTouched(go);
 		if(!immovable)
 		{	
-			if(go instanceof GameObjectExt)
-			{
-				float avgVelX = (((GameObjectExt) go).velocity.x + velocity.x) / 2;
-				if(velocity.x > 0)
-					velocity.x -= avgVelX * elasticity;
-			}
-			else
-			{
-				if(velocity.x > 0)
-					velocity.x = 0;
-			}
+			if(velocity.x > 0)
+				velocity.x = 0;
 		}
 	}
 	
 	public void justTouchedTop(GameObject go)
 	{
+		justTouched(go);
 		if(!immovable)
 		{	
-			if(go instanceof GameObjectExt)
-			{
-				float avgVelY = (((GameObjectExt) go).velocity.y + velocity.y) / 2;
-				if(velocity.y < 0)
-					velocity.y += avgVelY * elasticity;
-			}
-			else
-			{
-				if(velocity.y < 0)
-					velocity.y = 0;
-			}
+			if(velocity.y < 0)
+				velocity.y = 0;
 		}
 	}
 	
 	public void justTouchedBottom(GameObject go)
 	{
+		justTouched(go);
 		if(!immovable)
 		{	
-			if(go instanceof GameObjectExt)
-			{
-				float avgVelY = (((GameObjectExt) go).velocity.y + velocity.y) / 2;
-				if(velocity.y > 0)
-					velocity.y -= avgVelY * elasticity;
-			}
-			else
-			{
-				if(velocity.y > 0)
-					velocity.y = 0;
-			}
+			if(velocity.y > 0)
+				velocity.y = 0;
 		}
+	}
+	
+	public void justTouched(GameObject go)
+	{
 	}
 	
 	public boolean isTouchingLeft()
@@ -286,22 +280,26 @@ public class GameObjectExt extends GameObject
 		// whether that object lies on the left or the right 
 		// side
 		
+		boolean hitSomething = false;
+		
 		// if we can hit things from the right
 		if(allowRightCollision)
 		{
 			// touching right side of our rect with the left side of the other rect
-			if(go.getLeft() + Math.abs(velocity.x) + 1 > getRight())
+			if(go.getLeft() + Math.abs(velocity.x) + collisionExtend > getRight())
 			{
 				touchingRight = true;
 				touching = go;
-				if(!lastTouchingRight) justTouchedRight(go);
+				if(!lastTouchingRight)
+					justTouchedRight(go);
 				
 				if(go instanceof GameObjectExt)
 				{
 					((GameObjectExt) go).touchingLeft = true;
 					if(!((GameObjectExt) go).lastTouchingLeft) ((GameObjectExt) go).justTouchedLeft(this);
 				}
-				return true;
+				
+				hitSomething = true;
 			}
 		}
 		
@@ -309,23 +307,24 @@ public class GameObjectExt extends GameObject
 		if(allowLeftCollision)
 		{
 			// touching left side of our rect with the right side of the other rect
-			if(go.getRight() - Math.abs(velocity.x) - 1 < getLeft())
+			if(go.getRight() - Math.abs(velocity.x) - collisionExtend < getLeft())
 			{
 				touchingLeft = true;
 				touching = go;
-				if(!lastTouchingLeft) justTouchedLeft(go);
+				if(!lastTouchingLeft)
+					justTouchedLeft(go);
 				
 				if(go instanceof GameObjectExt)
 				{
 					((GameObjectExt) go).touchingRight = true;
 					if(!((GameObjectExt) go).lastTouchingRight) ((GameObjectExt) go).justTouchedRight(this);
 				}
-				return true;
+				
+				hitSomething = true;
 			}
 		}
 		
-		// either we didn't hit a side or we don't collide on these sides, so continue moving through
-		return false;
+		return hitSomething;
 	}
 	
 	public boolean moveCollideY(GameObject go)
@@ -337,22 +336,26 @@ public class GameObjectExt extends GameObject
 		// whether that object lies above or below this
 		// object
 		
+		boolean hitSomething = false;
+		
 		// if we can hit things from the top
 		if(allowTopCollision)
 		{
 			// touching the top side of our rect with the bottom side of the other rect
-			if(go.getBottom() - Math.abs(velocity.y) - 1 < getTop())
+			if(go.getBottom() - Math.abs(velocity.y) - collisionExtend < getTop())
 			{
 				touchingTop = true;
 				touching = go;
-				if(!lastTouchingTop) justTouchedTop(go);
+				if(!lastTouchingTop)
+					justTouchedTop(go);
 				
 				if(go instanceof GameObjectExt)
 				{
 					((GameObjectExt) go).touchingBottom = true;
 					if(!((GameObjectExt) go).lastTouchingBottom) ((GameObjectExt) go).justTouchedBottom(this);
 				}
-				return true;
+				
+				hitSomething = true;
 			}
 		}
 		
@@ -360,22 +363,23 @@ public class GameObjectExt extends GameObject
 		if(allowBottomCollision)
 		{
 			// touching the bottom side of our rect with the top side of the other rect
-			if(go.getBottom() + Math.abs(velocity.y) + 1 > getBottom())
+			if(go.getBottom() + Math.abs(velocity.y) + collisionExtend > getBottom())
 			{
 				touchingBottom = true;
 				touching = go;
-				if(!lastTouchingBottom) justTouchedBottom(go);
+				if(!lastTouchingBottom)
+					justTouchedBottom(go);
 				
 				if(go instanceof GameObjectExt)
 				{
 					((GameObjectExt) go).touchingTop = true;
 					if(!((GameObjectExt) go).lastTouchingTop) ((GameObjectExt) go).justTouchedTop(this);
 				}
-				return true;
+
+				hitSomething = true;
 			}
 		}
 		
-		// either we didn't hit a side or we don't collide on these sides, so continue moving through
-		return false;
+		return hitSomething;
 	}
 }

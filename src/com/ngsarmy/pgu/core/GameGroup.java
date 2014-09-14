@@ -3,7 +3,9 @@ package com.ngsarmy.pgu.core;
 import java.util.ArrayList;
 import java.util.List;
 
-// GameObjectManager class:
+import com.ngsarmy.pgu.utils.Rectangle;
+
+// GameGroup class:
 // This class is a parent class
 // of a game state. It provides 
 // utilities for managing game 
@@ -13,13 +15,12 @@ public class GameGroup
 {
 	public static final int MAX_LAYER = 5;
 	private GameText debugText;
+	private Rectangle collisionBounds;
 	
 	static enum Action
 	{
 		ADD_GO,
-		REM_GO,
-		ADD_COLLIDABLE,
-		REM_COLLIDABLE
+		REM_GO
 	}
 	
 	static class PendingChange
@@ -35,9 +36,7 @@ public class GameGroup
 	}
 	
 	private List<GameObject> objectList = new ArrayList<GameObject>();
-	private List<GameObject> collidableObjectList = new ArrayList<GameObject>();
 	private List<PendingChange> objectChangeList = new ArrayList<PendingChange>();
-	private List<PendingChange> collidableChangeList = new ArrayList<PendingChange>();
 	
 	public GameGroup()
 	{
@@ -46,6 +45,26 @@ public class GameGroup
 		
 		if(!debugText.loadFont("res/PGUFont.png", 8, 8))
 			System.exit(-1);
+		
+		collisionBounds = null;
+	}
+	
+	public void setCollisionBounds(float x, float y, float w, float h)
+	{
+		if(collisionBounds == null)
+			collisionBounds = new Rectangle(x, y, w, h);
+		else
+		{
+			collisionBounds.position.x = x;
+			collisionBounds.position.y = y;
+			collisionBounds.size.x = w;
+			collisionBounds.size.y = h;
+		}
+	}
+	
+	public void removeCollisionBounds()
+	{
+		collisionBounds = null;
 	}
 	
 	public void eventGroup(GameEvent ev)
@@ -54,7 +73,6 @@ public class GameGroup
 			objectList.get(i).event(ev);
 		
 		applyPendingChanges();
-		applyCollidablePendingChanges();
 	}
 	
 	public void updateGroup(float delta)
@@ -63,7 +81,6 @@ public class GameGroup
 			objectList.get(i).update(delta);
 		
 		applyPendingChanges();
-		applyCollidablePendingChanges();
 	}
 	
 	public void renderGroup(GameRasterizer g)
@@ -75,7 +92,13 @@ public class GameGroup
 				GameObject go = objectList.get(i);
 				
 				if(go.layer == l)
-					go.render(g);
+				{	
+					if(Game.getViewRect().collide(go.rectangle))
+					{
+						g.currentGo = go;
+						go.render(g);
+					}
+				}
 			}
 		}
 	}
@@ -94,32 +117,20 @@ public class GameGroup
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 20);
 			debugText.setText("layer: " + go.layer);
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 30);
-			debugText.setText("collidable: " + go.getCollidable());
+			debugText.setText("collidable: " + go.collidable);
 			g.renderText(debugText, (int)go.getLeft(), (int)go.getTop() - 40);
 		}
-	}
-	
-	public void addAsCollidable(GameObject object)
-	{
-		collidableChangeList.add(new PendingChange(Action.ADD_COLLIDABLE, object));
-	}
-	
-	public void removeAsCollidable(GameObject object)
-	{
-		collidableChangeList.add(new PendingChange(Action.REM_COLLIDABLE, object));
 	}
 	
 	public GameObject add(GameObject object)
 	{
 		object.state = (GameState)this;
-		collidableChangeList.add(new PendingChange(Action.ADD_COLLIDABLE, object));
 		objectChangeList.add(new PendingChange(Action.ADD_GO, object));
 		return object;
 	}
 	
 	public void remove(GameObject object)
 	{
-		collidableChangeList.add(new PendingChange(Action.REM_COLLIDABLE, object));
 		objectChangeList.add(new PendingChange(Action.REM_GO, object));
 	}
 	
@@ -157,32 +168,68 @@ public class GameGroup
 	
 	public GameObject getCollidableWithName(String name)
 	{
-		for(int i = 0; i < collidableObjectList.size(); i++)
+		for(int i = 0; i < objectList.size(); i++)
 		{
-			GameObject go = collidableObjectList.get(i);
-			if(go.name.equals(name))
-				return go;
+			GameObject go = objectList.get(i);
+			
+			if(collisionBounds != null)
+			{
+				if(collisionBounds.collide(go.rectangle))
+				{
+					if(go.collidable && go.name.equals(name))
+						return go;
+				}
+			}
+			else
+			{
+				if(go.collidable && go.name.equals(name))
+					return go;
+			}
 		}
 		return null;
 	}
 	
 	public void getCollidableWithType(String type, List<GameObject> objs)
 	{
-		for(int i = 0; i < collidableObjectList.size(); i++)
+		for(int i = 0; i < objectList.size(); i++)
 		{
-			GameObject go = collidableObjectList.get(i);
-			if(go.type.equals(type))
-				objs.add(go);
+			GameObject go = objectList.get(i);
+			
+			if(collisionBounds != null)
+			{
+				if(collisionBounds.collide(go.rectangle))
+				{
+					if(go.collidable && go.type.equals(type))
+						objs.add(go);
+				}
+			}
+			else
+			{
+				if(go.collidable && go.type.equals(type))
+					objs.add(go);
+			}
+				
 		}
 	}
 	
 	public void getCollidableWithLayer(int layer, List<GameObject> objs)
 	{
-		for(int i = 0; i < collidableObjectList.size(); i++)
+		for(int i = 0; i < objectList.size(); i++)
 		{
-			GameObject go = collidableObjectList.get(i);
-			if(go.layer == layer)
-				objs.add(go);
+			GameObject go = objectList.get(i);
+			if(collisionBounds != null)
+			{
+				if(collisionBounds.collide(go.rectangle))
+				{
+					if(go.collidable && go.layer == layer)
+						objs.add(go);
+				}
+			}
+			else
+			{
+				if(go.collidable && go.layer == layer)
+					objs.add(go);
+			}
 		}
 	}
 	
@@ -195,6 +242,7 @@ public class GameGroup
 			switch(change.action)
 			{
 			case ADD_GO:
+				change.ent.parent = this;
 				objectList.add(change.ent);
 				change.ent.added();
 				break;
@@ -206,25 +254,5 @@ public class GameGroup
 			}
 		}
 		objectChangeList.clear();
-	}
-	
-	private void applyCollidablePendingChanges()
-	{
-		for(int i = 0; i < collidableChangeList.size(); i++)
-		{
-			PendingChange change = collidableChangeList.get(i);
-			
-			switch(change.action)
-			{
-			case ADD_COLLIDABLE:
-				collidableObjectList.add(change.ent);
-				break;
-			case REM_COLLIDABLE:
-				collidableObjectList.remove(change.ent);
-				break;
-			default:
-			}
-		}
-		collidableChangeList.clear();
 	}
 }

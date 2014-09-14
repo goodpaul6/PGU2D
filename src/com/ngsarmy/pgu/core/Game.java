@@ -1,10 +1,13 @@
 package com.ngsarmy.pgu.core;
 
+import java.util.Random;
+
 import javax.swing.JFrame;
 
 import com.ngsarmy.pgu.states.MainState;
 import com.ngsarmy.pgu.utils.GameConsts;
 import com.ngsarmy.pgu.utils.GameTimer;
+import com.ngsarmy.pgu.utils.Rectangle;
 
 public class Game implements Runnable
 {
@@ -13,6 +16,10 @@ public class Game implements Runnable
 	public static int scale = 2;
 	public static String log = "";
 	public static float delta = (float)(1 / GameConsts.NPF);
+	public static final boolean inIde = true;
+	
+	public static float cameraX;
+	public static float cameraY;
 	
 	private GameCanvas canvas;
 	
@@ -24,10 +31,43 @@ public class Game implements Runnable
 	
 	private Thread thread;
 	private boolean running = false;
-
+	
+	private static Rectangle viewRect;
+	public static Random random;
+	
 	public static void log(String message)
 	{
 		log = message;
+	}
+	
+	public static void cameraFollow(GameObject go, boolean center, float lerpFactor)
+	{
+		int finalPosX = go.getLeftI() + go.getWidthI() / 2;
+		int finalPosY = go.getTopI() + go.getHeightI() / 2;
+		
+		if(center)
+		{
+			finalPosX -= Game.width / 2;
+			finalPosY -= Game.height / 2;
+		}
+		
+		if(lerpFactor > 0)
+		{
+			cameraX += ((finalPosX - cameraX) * delta * lerpFactor);
+			cameraY += ((finalPosY - cameraY) * delta * lerpFactor);
+		}
+		else
+		{
+			cameraX = finalPosX;
+			cameraY = finalPosY;
+		}
+	}
+	
+	public static Rectangle getViewRect()
+	{
+		viewRect.position.x = cameraX;
+		viewRect.position.y = cameraY;
+		return viewRect;
 	}
 	
 	public Game()
@@ -43,6 +83,12 @@ public class Game implements Runnable
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		states = new GameStateStack();
+		cameraX = 0;
+		cameraY = 0;
+		
+		random = new Random();
+		
+		viewRect = new Rectangle(cameraX, cameraY, width, height);
 	}
 	
 	
@@ -80,6 +126,7 @@ public class Game implements Runnable
 			while(deltaTime >= 1.0)
 			{
 				update((float)(1 / GameConsts.FPS));
+				Game.delta = (float)(1 / GameConsts.FPS);
 				deltaTime--;
 				ups++;
 			}
@@ -115,8 +162,8 @@ public class Game implements Runnable
 	
 	public static void main(String[] args)
 	{
-		GameAssets.load();
 		Game game = new Game();
+		GameAssets.load(game);
 		game.states.pushState(new MainState(game));
 		game.start();
 	}

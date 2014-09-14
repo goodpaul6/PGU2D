@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 import com.ngsarmy.pgu.graphicutils.Animation;
 import com.ngsarmy.pgu.graphicutils.Animator;
+import com.ngsarmy.pgu.input.GameMouse;
 import com.ngsarmy.pgu.utils.GameInstances;
 import com.ngsarmy.pgu.utils.GameUtils;
+import com.ngsarmy.pgu.utils.Vector2;
 
 /* GameRasterizer Class:
  * an internal class used by game canvas to
@@ -25,10 +27,18 @@ public class GameRasterizer
 	// current color
 	private int color;
 	
-	// x render offset
-	public int xOffset = 0;
-	// y render offset
-	public int yOffset = 0;
+	// gameobject currently being drawn (for gameobject based effects)
+	public static GameObject currentGo;
+	
+	// FX VARIABLES:
+	// You may place globals here which
+	// the postRasterPixel can use for it's
+	// effects, such as the players position
+	// or the position of multiple lights.
+	// You must set these yourself.
+	// It is recommended that you prefix the variables
+	// with fx.
+	// END OF FX VARIABLES
 	
 	public GameRasterizer(int _width, int _height, int[] _pixels)
 	{
@@ -37,6 +47,8 @@ public class GameRasterizer
 		
 		pixels = _pixels;
 		color = 0;
+		
+		currentGo = null;
 	}
 	
 	// USAGE:
@@ -86,10 +98,10 @@ public class GameRasterizer
 	// omits rotation for faster render
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h)
 	{
-		if(_x + _w < xOffset) return;
-		if(_y + _h < yOffset) return;
-		if(_x >= xOffset + width) return;
-		if(_y >= yOffset + height) return;
+		if(_x + _w < (int)Game.cameraX) return;
+		if(_y + _h < (int)Game.cameraY) return;
+		if(_x >= (int)Game.cameraX + width) return;
+		if(_y >= (int)Game.cameraY + height) return;
 		
 		renderBuffer(img.getData(), _sx, _sy, _x, _y, _w, _h, img.getAlpha(), GameUtils.mapHex(img.getMask()), img.getWidth(), img.getHeight(), 0);
 	}
@@ -103,10 +115,10 @@ public class GameRasterizer
 	// following that, is the angle parameter, which you can use to rotate the data
 	public void renderSubImage(GameImage img, int _x, int _y, int _sx, int _sy, int _w, int _h, double angle)
 	{
-		if(_x + _w < xOffset) return;
-		if(_y + _h < yOffset) return;
-		if(_x >= xOffset + width) return;
-		if(_y >= yOffset + height) return;
+		if(_x + _w < (int)Game.cameraX) return;
+		if(_y + _h < (int)Game.cameraY) return;
+		if(_x >= (int)Game.cameraX + width) return;
+		if(_y >= (int)Game.cameraY + height) return;
 		
 		angle = ((int)angle % 360);
 		
@@ -138,10 +150,10 @@ public class GameRasterizer
 	// render an image to a location with the specified rotation
 	public void renderImage(GameImage img, int _x, int _y, double angle)
 	{	
-		if(_x + img.getWidth() < xOffset) return;
-		if(_y + img.getHeight() < yOffset) return;
-		if(_x >= xOffset + width) return;
-		if(_y >= yOffset + height) return;
+		if(_x + img.getWidth() < (int)Game.cameraX) return;
+		if(_y + img.getHeight() < (int)Game.cameraY) return;
+		if(_x >= (int)Game.cameraX + width) return;
+		if(_y >= (int)Game.cameraY + height) return;
 		
 		angle = ((int)angle % 360);
 		
@@ -184,10 +196,10 @@ public class GameRasterizer
 	// of the current color
 	public void renderLineRectangle(int _x, int _y, int w, int h)
 	{
-		if (_x + w < xOffset) return;
-		if (_y + h < yOffset) return;
-		if (_x > xOffset + width) return;
-		if (_y > yOffset + height) return;
+		if (_x + w < (int)Game.cameraX) return;
+		if (_y + h < (int)Game.cameraY) return;
+		if (_x > (int)Game.cameraX + width) return;
+		if (_y > (int)Game.cameraY + height) return;
 		int[] data = GameInstances.allocateGeneralBuffer(w * h);
 		Arrays.fill(data, color - 1);
 		int rX = 0, rY = 0;
@@ -225,10 +237,10 @@ public class GameRasterizer
 	// of the current color
 	public void renderFilledRectangle(int _x, int _y, int _w, int _h)
 	{
-		if (_x + _w < xOffset) return;
-		if (_y + _h < yOffset) return;
-		if (_x > xOffset + width) return;
-		if (_y > yOffset + height) return;
+		if (_x + _w < (int)Game.cameraX) return;
+		if (_y + _h < (int)Game.cameraY) return;
+		if (_x > (int)Game.cameraX + width) return;
+		if (_y > (int)Game.cameraY + height) return;
 		int[] data = GameInstances.allocateGeneralBuffer(_w * _h);
 		Arrays.fill(data, 0xffffff);
 		renderBuffer(data, 0, 0, _x, _y, _w, _h, 255, new GameColor(-1, -1, -1), _w, _h, 0);
@@ -249,8 +261,8 @@ public class GameRasterizer
 	// and this function allows you to blit them onto the screen at a specific location easily and with blending
 	public void renderBuffer(int[] _pixels, int ox, int oy, int _x, int _y, int w, int h, int alpha, GameColor mask, int scanWidth, int scanHeight, double angle)
 	{
-		int tX = _x - xOffset;
-		int tY = _y - yOffset;
+		int tX = _x - (int)Game.cameraX;
+		int tY = _y - (int)Game.cameraY;
 		
 		for(int y = 0; y < h; y++)
 		{
@@ -263,7 +275,7 @@ public class GameRasterizer
 				if(x + ox >= scanWidth) break;
 				int rX = tX + x;
 				if(rX >= width || rX < 0) continue;
-				
+
 				int col = _pixels[(x + ox) + (y + oy) * scanWidth];
 				
 				int cr = (col >> 16) & 0xff;
@@ -282,7 +294,7 @@ public class GameRasterizer
 				ng = (int)(blend(cg, pg, alpha, GameUtils.decomposeRgb(color, 1)));
 				nb = (int)(blend(cb, pb, alpha, GameUtils.decomposeRgb(color, 2)));
 				
-				pixels[rX + rY * width] = GameUtils.mapRgb(nr, ng, nb);
+				pixels[rX + rY * width] = postRasterPixel(rX, rY, _x + x, _y + y, nr, ng, nb, GameUtils.mapRgb(nr, ng, nb), x + ox, y + oy, w, h, scanWidth, scanHeight, _pixels);
 			}
 		}
 	}
@@ -328,11 +340,29 @@ public class GameRasterizer
 	{
 		return (dst * (1 - srcA / 255f) + (src * (tint / 255f)) * (srcA / 255f));
 	}
-	
+
+	// WARNING: DO NOT CALL THIS DIRECTLY
+	// CALLBACK:
+	// This method will be called by the rasterizer after it draws a pixel to a location
+	// for post processing of the pixels on the screen (i.e vignette, etc)
+	// this is much faster than using the postProcess method as it is called
+	// as the rendering goes along 
+	// you can also use the currentGo variable of this class to change effects 
+	// for different game objects (but you must first check if a game object is being drawn by
+	// checking if currentGo is null)
+	// return the calculated color value (as an integer color [use GameUtils.mapRgb])
+	public int postRasterPixel(int screenX, int screenY, int actualX, int actualY, int calcR, int calcG, int calcB, int col, int smpX, int smpY, int w, int h, int scanWidth, int scanHeight, int[] data)
+	{	
+		return col;
+	}
 	
 	// WARNING: DO NOT CALL THIS DIRECTLY
-	// This method will be called by the game class when all rendering is completed to allow
-	// for post processing of the pixels on the screen (i.e blurring, bloom, etc)
+	// CALLBACK:
+	// This method will be called by the Game class after the screen is done
+	// rendering. You can use this to perform post processing effects on the pixel buffer
+	// (i.e blurring). Most of the times, you do not need to perform post processing here
+	// and can simply do it in the post raster pixels method, but if you need to do
+	// a full scale screen effect, like a water mark, use this
 	public void postProcess()
 	{
 	}

@@ -3,6 +3,8 @@ package com.ngsarmy.pgu.core;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -61,6 +63,54 @@ public class GameImage
 			e.printStackTrace();
 			return false;
 		}
+		return true;
+	}
+	
+	// USAGE:
+	// loads image data from a stream which is what GameAssets uses in it's underlying system
+	public boolean loadFromStream(InputStream stream)
+	{
+		BufferedImage image = null;
+		
+		try
+		{
+			image = ImageIO.read(stream);
+
+			width = image.getWidth();
+			height = image.getHeight();
+			pixels = new int[width * height];
+			image.getRGB(0, 0, width, height, pixels, 0, width);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	// USAGE:
+	// loads image data from a url stream which is what GameAssets uses in it's underlying system
+	public boolean loadFromStream(URL stream)
+	{
+		BufferedImage image = null;
+		
+		try
+		{
+			image = ImageIO.read(stream);
+
+			width = image.getWidth();
+			height = image.getHeight();
+			pixels = new int[width * height];
+			image.getRGB(0, 0, width, height, pixels, 0, width);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
 		return true;
 	}
 	
