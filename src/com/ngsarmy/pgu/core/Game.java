@@ -33,6 +33,7 @@ public class Game implements Runnable
 	private boolean running = false;
 	
 	private static Rectangle viewRect;
+	
 	public static Random random;
 	
 	public static void log(String message)

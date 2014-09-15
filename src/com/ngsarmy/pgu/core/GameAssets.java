@@ -50,19 +50,7 @@ public class GameAssets
 			return null;
 		
 		GameImage loaded = new GameImage();
-		if(!Game.inIde)
-		{
-			if(!loaded.loadFromStream(u))
-				return null;
-		}
-		else
-		{	
-			if(!loaded.loadFromFile("res/" + path))
-			{
-				System.err.println("Error: could not load font from path '" + path + "'");
-				System.exit(-1);
-			}
-		}
+		loaded.loadFromFile(path);
 		images.put(path, loaded);
 		return loaded;
 	}

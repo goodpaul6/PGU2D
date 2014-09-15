@@ -80,6 +80,8 @@ public class GameCanvas extends Canvas
 			return;
 		}
 		
+		rst.getRaster(pixels);
+		
 		Graphics g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.dispose();
